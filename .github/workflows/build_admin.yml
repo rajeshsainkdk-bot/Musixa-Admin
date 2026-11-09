@@ -28,13 +28,229 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Cache Pub Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
+      - name: Recreate Android Project with Native Flutter Wrapper
+        run: |
+          mkdir -p /tmp/icon_backup
+          cp -r android/app/src/main/res/mipmap* /tmp/icon_backup/ 2>/dev/null || true
+          
+          rm -rf android
+          flutter create . --platforms=android --org=com.musixa
+
+          cp -r /tmp/icon_backup/mipmap* android/app/src/main/res/ 2>/dev/null || true
+
+      - name: Configure Admin Android Manifest
+        run: |
+          cat << 'EOF' > android/app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools">
+
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+              <uses-permission android:name="android.permission.WAKE_LOCK" />
+              <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+              <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+              <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+              <!-- Storage & Installation Permissions for Cloudflare R2 Uploads & OTA updates -->
+              <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+              <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+              <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+
+              <queries>
+                  <intent>
+                      <action android:name="android.intent.action.VIEW" />
+                      <data android:mimeType="application/vnd.android.package-archive" />
+                  </intent>
+                  <intent>
+                      <action android:name="android.intent.action.INSTALL_PACKAGE" />
+                      <data android:mimeType="application/vnd.android.package-archive" />
+                  </intent>
+              </queries>
+
+              <application
+                  android:label="Musixa Admin"
+                  android:name="${applicationName}"
+                  android:icon="@mipmap/ic_launcher"
+                  android:requestLegacyExternalStorage="true"
+                  android:usesCleartextTraffic="true">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:launchMode="singleTop"
+                      android:theme="@style/LaunchTheme"
+                      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+                      android:hardwareAccelerated="true"
+                      android:windowSoftInputMode="adjustResize">
+                      <meta-data
+                        android:name="io.flutter.embedding.android.NormalTheme"
+                        android:resource="@style/NormalTheme"
+                        />
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
+
+                  <!-- AudioService for Background Playback -->
+                  <service 
+                      android:name="com.ryanheise.audioservice.AudioService" 
+                      android:foregroundServiceType="mediaPlayback" 
+                      android:exported="true" 
+                      tools:ignore="Instantiatable">
+                      <intent-filter>
+                          <action android:name="android.media.browse.MediaBrowserService" />
+                      </intent-filter>
+                  </service>
+
+                  <receiver 
+                      android:name="com.ryanheise.audioservice.MediaButtonReceiver" 
+                      android:exported="true" 
+                      tools:ignore="Instantiatable">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MEDIA_BUTTON" />
+                      </intent-filter>
+                  </receiver>
+
+                  <provider
+                      android:name="androidx.core.content.FileProvider"
+                      android:authorities="${applicationId}.fileprovider"
+                      android:exported="false"
+                      android:grantUriPermissions="true">
+                      <meta-data
+                          android:name="android.support.FILE_PROVIDER_PATHS"
+                          android:resource="@xml/file_paths" />
+                  </provider>
+
+                  <meta-data
+                      android:name="flutterEmbedding"
+                      android:value="2" />
+              </application>
+          </manifest>
+          EOF
+
+          mkdir -p android/app/src/main/res/xml
+          cat << 'EOF' > android/app/src/main/res/xml/file_paths.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <paths xmlns:android="http://schemas.android.com/apk/res/android">
+              <root-path name="root" path="." />
+              <cache-path name="apk_cache" path="." />
+              <external-cache-path name="ext_cache" path="." />
+              <files-path name="files" path="." />
+              <external-path name="ext_files" path="." />
+              <external-files-path name="ext_downloads" path="." />
+          </paths>
+          EOF
+
+      - name: Configure Native Admin MainActivity
+        run: |
+          rm -rf android/app/src/main/kotlin/com/musixa/*
+          mkdir -p android/app/src/main/kotlin/com/musixa/musixa_admin
+          cat << 'EOF' > android/app/src/main/kotlin/com/musixa/musixa_admin/MainActivity.kt
+          package com.musixa.musixa_admin
+
+          import android.content.Context
+          import android.content.Intent
+          import android.content.pm.PackageManager
+          import android.os.Build
+          import androidx.core.content.FileProvider
+          import com.ryanheise.audioservice.AudioServiceActivity
+          import io.flutter.embedding.engine.FlutterEngine
+          import io.flutter.plugin.common.MethodChannel
+          import java.io.File
+
+          class MainActivity: AudioServiceActivity() {
+              private val CHANNEL = "com.msixa.player/app_share"
+
+              override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+                  super.configureFlutterEngine(flutterEngine)
+                  MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+                      when (call.method) {
+                          "acquireWakeLock" -> result.success(true)
+                          "releaseWakeLock" -> result.success(true)
+                          "showUploadNotification" -> result.success(true)
+                          "installApk" -> {
+                              try {
+                                  val filePath = call.argument<String>("filePath") ?: throw IllegalArgumentException("filePath required")
+                                  val file = File(filePath)
+
+                                  val apkUri = FileProvider.getUriForFile(
+                                      applicationContext,
+                                      "${applicationContext.packageName}.fileprovider",
+                                      file
+                                  )
+                                  val intent = Intent(Intent.ACTION_VIEW).apply {
+                                      setDataAndType(apkUri, "application/vnd.android.package-archive")
+                                      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                  }
+                                  applicationContext.startActivity(intent)
+                                  result.success(true)
+                              } catch (e: Exception) {
+                                  result.error("INSTALL_ERROR", e.localizedMessage, null)
+                              }
+                          }
+                          "getAppVersion" -> {
+                              try {
+                                  val pInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                      applicationContext.packageManager.getPackageInfo(applicationContext.packageName, 0).longVersionCode
+                                  } else {
+                                      @Suppress("DEPRECATION")
+                                      applicationContext.packageManager.getPackageInfo(applicationContext.packageName, 0).versionCode.toLong()
+                                  }
+                                  val versionName = applicationContext.packageManager.getPackageInfo(applicationContext.packageName, 0).versionName ?: "1.0.0"
+                                  result.success(mapOf(
+                                      "versionCode" to pInfo,
+                                      "versionName" to versionName
+                                  ))
+                              } catch (e: Exception) {
+                                  result.error("VERSION_ERROR", e.localizedMessage, null)
+                              }
+                          }
+                          else -> result.notImplemented()
+                      }
+                  }
+              }
+          }
+          EOF
+
+      - name: Configure Android Gradle Settings and Keystore Signing
+        run: |
+          sed -i 's/minSdkVersion .*/minSdkVersion = 21/' android/app/build.gradle || true
+          sed -i 's/minSdk = .*/minSdk = 21/' android/app/build.gradle || true
+          sed -i 's/applicationId .*/applicationId = "com.musixa.admin"/' android/app/build.gradle || true
+
+          cat << 'EOF' | base64 -d > android/app/msixa_release.jks
+          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
+          EOF
+
+          python - << 'EOF'
+          with open('android/app/build.gradle', 'r') as f:
+              content = f.read()
+
+          signing_block = """
+              signingConfigs {
+                  release {
+                      storeFile file('msixa_release.jks')
+                      storePassword 'msixaplayer123'
+                      keyAlias 'msixakey'
+                      keyPassword 'msixaplayer123'
+                  }
+              }
+          """
+
+          if 'signingConfigs {' not in content:
+              content = content.replace('buildTypes {', signing_block + '\n    buildTypes {')
+
+          content = content.replace('signingConfig = signingConfigs.debug', 'signingConfig = signingConfigs.release')
+          content = content.replace('signingConfig signingConfigs.debug', 'signingConfig signingConfigs.release')
+
+          with open('android/app/build.gradle', 'w') as f:
+              f.write(content)
+          print("Signed release successfully in build.gradle")
+          EOF
 
       - name: Install Dependencies
         run: flutter pub get
@@ -45,11 +261,10 @@ jobs:
           flutter test test/msixa_features_test.dart
 
       - name: Build Musixa Admin Release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload Musixa Admin APK Artifact
+      - name: Upload Musixa Admin Release APK
         uses: actions/upload-artifact@v4
         with:
           name: Musixa-Admin-Release-APK
           path: build/app/outputs/flutter-apk/app-release.apk
-
