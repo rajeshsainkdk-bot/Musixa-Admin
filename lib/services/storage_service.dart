@@ -1,19 +1,19 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/song.dart';
 import '../models/playlist.dart';
 
 class StorageService {
-  static const String _keyFavorites = 'msixa_favorites';
-  static const String _keyRecent = 'msixa_recently_played';
-  static const String _keyCustomPlaylists = 'msixa_user_playlists';
-  static const String _keyEqPreset = 'msixa_eq_preset';
-  static const String _keyEqGains = 'msixa_eq_gains';
+  static const String _keyFavorites = 'musixa_favorites';
+  static const String _keyRecent = 'musixa_recently_played';
+  static const String _keyCustomPlaylists = 'musixa_user_playlists';
+  static const String _keyEqPreset = 'musixa_eq_preset';
+  static const String _keyEqGains = 'musixa_eq_gains';
 
   static String _cleanPhone(String? p) => p == null ? '' : p.replaceAll(RegExp(r'[^0-9]'), '');
-  static String _favKey([String? phone]) => _cleanPhone(phone).isNotEmpty ? 'msixa_fav_${_cleanPhone(phone)}' : 'msixa_favorites';
-  static String _recentKey([String? phone]) => _cleanPhone(phone).isNotEmpty ? 'msixa_rec_${_cleanPhone(phone)}' : 'msixa_recently_played';
-  static String _plKey([String? phone]) => _cleanPhone(phone).isNotEmpty ? 'msixa_pl_${_cleanPhone(phone)}' : 'msixa_user_playlists';
+  static String _favKey([String? phone]) => _cleanPhone(phone).isNotEmpty ? 'musixa_fav_${_cleanPhone(phone)}' : 'musixa_favorites';
+  static String _recentKey([String? phone]) => _cleanPhone(phone).isNotEmpty ? 'musixa_rec_${_cleanPhone(phone)}' : 'musixa_recently_played';
+  static String _plKey([String? phone]) => _cleanPhone(phone).isNotEmpty ? 'musixa_pl_${_cleanPhone(phone)}' : 'musixa_user_playlists';
 
   Future<List<Song>> loadFavorites([String? userPhone]) async {
     try {

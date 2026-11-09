@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/song.dart';
@@ -885,7 +885,7 @@ class _LibraryScreenState extends State<LibraryScreen>
               ),
               const SizedBox(height: 10),
               const Text(
-                'Scan your device storage (Downloads, Music folders) to play your offline MP3 songs with Msixa Player.',
+                'Scan your device storage (Downloads, Music folders) to play your offline MP3 songs with Musixa Player.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
               ),

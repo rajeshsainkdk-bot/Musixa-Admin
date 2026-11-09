@@ -1,6 +1,6 @@
-# 📄 BUSINESS REQUIREMENTS DOCUMENT (BRD)
-## Project Name: Msixa Music Streaming & Community Ecosystem
-**System Architecture:** Dual-APK Platform (Msixa Player & Msixa Admin)  
+﻿# 📄 BUSINESS REQUIREMENTS DOCUMENT (BRD)
+## Project Name: Musixa Music Streaming & Community Ecosystem
+**System Architecture:** Dual-APK Platform (Musixa Player & Musixa Admin)  
 **Version:** 2.0 (Production Release)  
 **Document Owner:** Antigravity AI Engineering Team  
 **Status:** Approved & Archive Reference  
@@ -11,7 +11,7 @@
 ## 1. Executive Summary & Vision Statement
 
 ### 1.1 Vision
-Msixa is an ad-free, 100% free Indian music streaming and community-driven audio distribution ecosystem. It solves the fragmentation and aggressive paywalls of modern commercial music apps by providing:
+Musixa is an ad-free, 100% free Indian music streaming and community-driven audio distribution ecosystem. It solves the fragmentation and aggressive paywalls of modern commercial music apps by providing:
 1. **Instant, Zero-Cost High-Fidelity Audio**: 17 curated, master-quality Indian tracks bundled locally for guaranteed offline and online playback without subscriptions.
 2. **Verified Community Uploads**: Any registered listener can contribute independent tracks, safeguarded by real-time duplicate detection algorithms.
 3. **Rigorous Administrative Moderation**: Zero unverified content reaches users. A separate, dedicated Admin application enforces platform standards, audio quality checks, and real-time user directory visibility.
@@ -38,17 +38,17 @@ The platform is partitioned into two distinct native Android applications built 
 ```mermaid
 graph TD
     subgraph "Public Distribution Channel"
-        UAPK["Msixa Player (User APK)<br/><code>com.msixa.msixa_player</code>"]
+        UAPK["Musixa Player (User APK)<br/><code>com.Musixa.Musixa_player</code>"]
     end
 
     subgraph "Internal Operations Channel"
-        AAPK["Msixa Admin (Admin APK)<br/><code>com.msixa.admin</code>"]
+        AAPK["Musixa Admin (Admin APK)<br/><code>com.Musixa.admin</code>"]
     end
 
     subgraph "Shared Cloud & Local Backend"
         CBS["CloudBackendService (Singleton)"]
         SP["Encrypted Shared Storage (SharedPreferences)"]
-        FS["FileProvider Native Extraction (MsixaPlayer.apk)"]
+        FS["FileProvider Native Extraction (MusixaPlayer.apk)"]
     end
 
     UAPK -->|User Registration & Auth| CBS
@@ -67,16 +67,16 @@ graph TD
 ### 4.1 Persona 1: The Devotional & Melodic Listener (Aman, 28)
 - **Goal:** Wants to listen to Hanuman Chalisa, Satinder Sartaaj Sufi songs, and Ghazals without paying monthly subscriptions or listening to annoying ads.
 - **Pain Point:** Most streaming apps lock high-quality audio behind premium plans and delete songs when offline.
-- **Msixa Solution:** Instant offline playback of 17 bundled master tracks with 5-band studio equalizer and sleep timer.
+- **Musixa Solution:** Instant offline playback of 17 bundled master tracks with 5-band studio equalizer and sleep timer.
 
 ### 4.2 Persona 2: The Indie Musician / Contributor (Pooja, 22)
 - **Goal:** Wants to share her original devotional covers and indie music with a growing Indian music community.
 - **Pain Point:** Getting music on major streaming platforms requires distributor fees and weeks of review.
-- **Msixa Solution:** Simple in-app upload screen. Instant duplicate check prevents accidental reposts. Tracks enter Admin review queue and go live platform-wide upon approval.
+- **Musixa Solution:** Simple in-app upload screen. Instant duplicate check prevents accidental reposts. Tracks enter Admin review queue and go live platform-wide upon approval.
 
 ### 4.3 Persona 3: Platform Super Administrator (Admin Rajesh)
 - **Goal:** Full visibility into platform operations: who is listening, how many active users, which songs are pending review, and direct communication channels.
-- **Msixa Solution:** Dedicated Admin APK protected by Master PIN (`7777`), executive KPI cards, in-app audio preview player, and one-tap Call/WhatsApp/Email triggers for every registered user.
+- **Musixa Solution:** Dedicated Admin APK protected by Master PIN (`7777`), executive KPI cards, in-app audio preview player, and one-tap Call/WhatsApp/Email triggers for every registered user.
 
 ---
 
@@ -130,7 +130,7 @@ graph TD
 
 ### FR-08: Searchable Users Directory with Native CRM Triggers & Cross-App Sync
 - **Description:** Admin views all registered users with real-time active indicators, email, and phone numbers.
-- **Cross-App Sync:** Synchronized between User App (`com.msixa.msixa_player`) and Admin App (`com.msixa.admin`) via shared storage and `android:sharedUserId`.
+- **Cross-App Sync:** Synchronized between User App (`com.Musixa.Musixa_player`) and Admin App (`com.Musixa.admin`) via shared storage and `android:sharedUserId`.
 - **One-Tap Actions:**
   - `[📞 Call]`: Opens device phone dialer with user's number.
   - `[💬 WhatsApp]`: Launches official WhatsApp chat with pre-filled support message.

@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/song.dart';
 import '../models/playlist.dart';
@@ -19,7 +19,7 @@ class CatalogService {
     // 1. BHAKTI, DEVOTIONAL & SPIRITUAL MANTRAS
     // ==========================================================
     Song(
-      id: 'msixa_bhakti_01',
+      id: 'Musixa_bhakti_01',
       title: 'Sankat Mochan Hanuman Ashtak',
       artist: 'Hariharan',
       album: 'Shree Hanuman Amritwani',
@@ -32,7 +32,7 @@ class CatalogService {
       source: 'Devotional Master Library',
     ),
     Song(
-      id: 'msixa_bhakti_02',
+      id: 'Musixa_bhakti_02',
       title: 'Ye Chamak Ye Damak (Sab Kuch Sarkar Tumhi Se)',
       artist: 'Sudhir Vyas',
       album: 'Sab Kuch Sarkar Tumhi Se Hai',
@@ -45,7 +45,7 @@ class CatalogService {
       source: 'Devotional Master Library',
     ),
     Song(
-      id: 'msixa_bhakti_03',
+      id: 'Musixa_bhakti_03',
       title: 'Powerful Hanuman Chalisa',
       artist: 'Sai Charan Bhaskaruni',
       album: 'HanuMan Original Motion Picture',
@@ -58,7 +58,7 @@ class CatalogService {
       source: 'Devotional Master Library',
     ),
     Song(
-      id: 'msixa_bhakti_04',
+      id: 'Musixa_bhakti_04',
       title: 'Ram Siya Ram',
       artist: 'Sachet Tandon & Parampara Tandon',
       album: 'Adipurush Soundscapes',
@@ -71,7 +71,7 @@ class CatalogService {
       source: 'Bollywood Master Library',
     ),
     Song(
-      id: 'msixa_bhakti_05',
+      id: 'Musixa_bhakti_05',
       title: 'Radhe Tere Charno Ki Dhool',
       artist: 'Bhumika Sharma',
       album: 'Krishna Bhajan Amrit 2025',
@@ -84,7 +84,7 @@ class CatalogService {
       source: 'Devotional Master Library',
     ),
     Song(
-      id: 'msixa_bhakti_06',
+      id: 'Musixa_bhakti_06',
       title: 'Bajrang Baan Lofi (11 Baar Non-Stop)',
       artist: 'Rasraj Ji Maharaj',
       album: 'Divine Lo-Fi Chants',
@@ -97,7 +97,7 @@ class CatalogService {
       source: 'Devotional Lo-Fi Library',
     ),
     Song(
-      id: 'msixa_bhakti_07',
+      id: 'Musixa_bhakti_07',
       title: 'Aadesh Hanuman (Alakh Niranjan)',
       artist: 'Baba Gorakhnath Parampara',
       album: 'Powerful Hanuman Stotra',
@@ -110,7 +110,7 @@ class CatalogService {
       source: 'Spiritual Master Library',
     ),
     Song(
-      id: 'msixa_bhakti_08',
+      id: 'Musixa_bhakti_08',
       title: 'Alakh Niranjan (Aghori Trance)',
       artist: 'Aghori Music',
       album: 'Tandav Spiritual Vibes',
@@ -123,7 +123,7 @@ class CatalogService {
       source: 'Spiritual Master Library',
     ),
     Song(
-      id: 'msixa_bhakti_09',
+      id: 'Musixa_bhakti_09',
       title: 'Powerful Siddh Shabar Mantra',
       artist: 'Baba Gorakhnath Tradition',
       album: 'Siddh Shabar Sangrah',
@@ -140,7 +140,7 @@ class CatalogService {
     // 2. SUFI, PUNJABI & CLASSIC SOUL (SATINDER SARTAAJ)
     // ==========================================================
     Song(
-      id: 'msixa_punjabi_01',
+      id: 'Musixa_punjabi_01',
       title: 'Guzarish (गुज़ारिश)',
       artist: 'Satinder Sartaaj',
       album: 'Shayar Soul Tracks',
@@ -153,7 +153,7 @@ class CatalogService {
       source: 'Sufi Master Library',
     ),
     Song(
-      id: 'msixa_punjabi_02',
+      id: 'Musixa_punjabi_02',
       title: 'Udaarian (Badi Lambi Hai Kahani)',
       artist: 'Satinder Sartaaj',
       album: 'Seasons of Sartaaj',
@@ -166,7 +166,7 @@ class CatalogService {
       source: 'Punjabi Master Library',
     ),
     Song(
-      id: 'msixa_punjabi_03',
+      id: 'Musixa_punjabi_03',
       title: 'Sajjan Raazi',
       artist: 'Satinder Sartaaj',
       album: 'Sajjan Raazi Romantic Sufi',
@@ -179,7 +179,7 @@ class CatalogService {
       source: 'Sufi Master Library',
     ),
     Song(
-      id: 'msixa_punjabi_04',
+      id: 'Musixa_punjabi_04',
       title: 'Tere Bina Na Guzara',
       artist: 'Satinder Sartaaj & Neeru Bajwa',
       album: 'Shayar Emotional Tracks',
@@ -192,7 +192,7 @@ class CatalogService {
       source: 'Punjabi Master Library',
     ),
     Song(
-      id: 'msixa_punjabi_05',
+      id: 'Musixa_punjabi_05',
       title: 'Jaiye Sajana',
       artist: 'Satinder Sartaaj, Shashwat Sachdev, Jasmine Sandlas',
       album: 'Dhurandhar Soundtrack',
@@ -205,7 +205,7 @@ class CatalogService {
       source: 'Bollywood Master Library',
     ),
     Song(
-      id: 'msixa_punjabi_06',
+      id: 'Musixa_punjabi_06',
       title: 'Best Punjabi Hits Jukebox',
       artist: 'Satinder Sartaaj',
       album: 'Sartaaj Live & Studio Classics',
@@ -222,7 +222,7 @@ class CatalogService {
     // 3. INDIE, GHAZAL & HEARTFELT CLASSICS
     // ==========================================================
     Song(
-      id: 'msixa_indie_01',
+      id: 'Musixa_indie_01',
       title: 'Intezaar Reh Gya (Pain in Love)',
       artist: 'Vibe Chapters',
       album: 'Broken Hearts Chapter 1',
@@ -235,7 +235,7 @@ class CatalogService {
       source: 'Indie Master Library',
     ),
     Song(
-      id: 'msixa_indie_02',
+      id: 'Musixa_indie_02',
       title: 'Kagaz Ki Kashti Dariya Hai Gehra',
       artist: 'Jagjit Singh & Chitra Singh',
       album: 'The Golden Ghazals Collection',

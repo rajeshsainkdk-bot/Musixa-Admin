@@ -1,6 +1,6 @@
-# 🧪 QUALITY ASSURANCE (QA) TEST PLAN & EXHAUSTIVE TEST SUITE
-## System: Msixa Player & Msixa Admin Platform
-**Target Releases:** `Msixa-Player-APK` (User) & `Msixa-Admin-APK` (Admin)  
+﻿# 🧪 QUALITY ASSURANCE (QA) TEST PLAN & EXHAUSTIVE TEST SUITE
+## System: Musixa Player & Musixa Admin Platform
+**Target Releases:** `Musixa-Player-APK` (User) & `Musixa-Admin-APK` (Admin)  
 **Test Documentation Standard:** IEEE 829 Software Test Documentation  
 **Version:** 2.0  
 **Archive Location:** `library/testing/TEST_CASES_AND_QA_CHECKLIST.md`  
@@ -24,9 +24,9 @@
 ## 2. Test Suite 1: User Onboarding & Authentication (TS-01)
 
 ### TC-AUTH-001: First-Time User Auth Screen Launch
-- **Precondition:** Fresh installation of `Msixa-Player-APK`, app data cleared.
+- **Precondition:** Fresh installation of `Musixa-Player-APK`, app data cleared.
 - **Test Steps:**
-  1. Launch Msixa Player.
+  1. Launch Musixa Player.
   2. Observe the initial screen displayed.
 - **Expected Result:** `AuthScreen` is rendered immediately with `[Login]` and `[Register]` tabs. The main player is completely inaccessible until authentication.
 - **Status:** PASS
@@ -53,7 +53,7 @@
 - **Test Steps:**
   1. Fill all 4 mandatory fields on Register tab.
   2. Tap `[✨ खाता बनाएं व शुरू करें]`.
-- **Expected Result:** Account is instantly created. User profile is saved to persistent directory with User ID `+91 9876500001`. Toast *"स्वागत है! आपका Msixa खाता सफलतापूर्वक बन गया है।"* appears. User enters `MainNavigationScreen`.
+- **Expected Result:** Account is instantly created. User profile is saved to persistent directory with User ID `+91 9876500001`. Toast *"स्वागत है! आपका Musixa खाता सफलतापूर्वक बन गया है।"* appears. User enters `MainNavigationScreen`.
 - **Status:** PASS
 
 ### TC-AUTH-005: Incorrect Password Entry during Login (Negative Test)
@@ -80,10 +80,10 @@
 - **Status:** PASS
 
 ### TC-AUTH-007: Cross-App Real-Time User Sync to Admin Dashboard
-- **Precondition:** User registers on User App (`Msixa Player`) on the device.
+- **Precondition:** User registers on User App (`Musixa Player`) on the device.
 - **Test Steps:**
   1. Complete registration for a new user (e.g. `Kavita Sharma`, `9876543222`).
-  2. Switch to / launch `Msixa Player Admin` app.
+  2. Switch to / launch `Musixa Player Admin` app.
   3. Navigate to "यूज़र्स डेटा (Users Directory)" tab or tap `[🔄 Refresh Data]` in AppBar.
 - **Expected Result:** Newly registered user `Kavita Sharma` with phone `+91 9876543222` appears immediately in the Admin directory with real-time `Active (Online)` indicator and working Call/WhatsApp/Email action buttons.
 - **Status:** PASS
@@ -231,7 +231,7 @@
 ### TC-SHAR-001: Verification of Top Heading Row
 - **Precondition:** User App Home Screen.
 - **Test Steps:**
-  1. Inspect the top heading row next to "Msixa Player".
+  1. Inspect the top heading row next to "Musixa Player".
 - **Expected Result:** Only `+ Upload Song` is present. No share icon/button in the top header.
 - **Status:** PASS
 
@@ -240,7 +240,7 @@
 - **Test Steps:**
   1. Locate the middle card: "Share App APK with Friends".
   2. Tap `[Share APK]`.
-- **Expected Result:** Native Android sharesheet opens. Sharesheet payload indicates `MsixaPlayer.apk` (`application/vnd.android.package-archive`).
+- **Expected Result:** Native Android sharesheet opens. Sharesheet payload indicates `MusixaPlayer.apk` (`application/vnd.android.package-archive`).
 - **Status:** PASS
 
 ### TC-SHAR-003: Zero Web Links / Zero Plain Text Sharing
@@ -248,21 +248,21 @@
 - **Test Steps:**
   1. Select a recipient on WhatsApp.
   2. Observe the compose input box.
-- **Expected Result:** The actual installer file `MsixaPlayer.apk` is attached as a document. There are NO text links, NO URLs, and NO web invites.
+- **Expected Result:** The actual installer file `MusixaPlayer.apk` is attached as a document. There are NO text links, NO URLs, and NO web invites.
 - **Status:** PASS
 
 ### TC-SHAR-004: File Transfer & Installation on Recipient Device
 - **Precondition:** APK file sent via WhatsApp / Nearby Share.
 - **Test Steps:**
-  1. On receiving phone, tap the received `MsixaPlayer.apk`.
+  1. On receiving phone, tap the received `MusixaPlayer.apk`.
   2. Tap "Install".
-- **Expected Result:** Package installer opens, verifies package `com.msixa.msixa_player`, and completes installation successfully.
+- **Expected Result:** Package installer opens, verifies package `com.Musixa.Musixa_player`, and completes installation successfully.
 - **Status:** PASS
 
 ### TC-SHAR-005: Fallback Mechanism if Local APK File Exists in Downloads
 - **Precondition:** Device where `base.apk` extraction is mocked or restricted.
 - **Test Steps:**
-  1. Ensure a file named `MsixaPlayer.apk` exists in `/storage/emulated/0/Download/`.
+  1. Ensure a file named `MusixaPlayer.apk` exists in `/storage/emulated/0/Download/`.
   2. Trigger `AppShareService.shareAppApk()`.
 - **Expected Result:** Fallback catches local file and shares it via `Share.shareXFiles` without crashing.
 - **Status:** PASS
@@ -272,7 +272,7 @@
 ## 6. Test Suite 5: Admin Dashboard, Moderation & CRM Directory (TS-05)
 
 ### TC-ADMN-001: Admin Master PIN Authentication
-- **Precondition:** Open `Msixa-Admin-APK`.
+- **Precondition:** Open `Musixa-Admin-APK`.
 - **Test Steps:**
   1. Enter incorrect PIN `1234` $\rightarrow$ Access denied, error vibration.
   2. Enter correct PIN `7777`.
@@ -332,7 +332,7 @@
 - **Precondition:** User list displayed.
 - **Test Steps:**
   1. Tap WhatsApp icon next to user.
-- **Expected Result:** WhatsApp opens with pre-filled message addressing the user from Msixa Support.
+- **Expected Result:** WhatsApp opens with pre-filled message addressing the user from Musixa Support.
 - **Status:** PASS
 
 ---

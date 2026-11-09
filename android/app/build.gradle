@@ -1,4 +1,4 @@
-plugins {
+﻿plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
@@ -47,10 +47,10 @@ android {
 
     signingConfigs {
         release {
-            keyAlias 'msixa_release_key'
-            keyPassword 'msixa2026'
+            keyAlias 'msixakey'
+            keyPassword 'msixaplayer123'
             storeFile file('msixa_release.jks')
-            storePassword 'msixa2026'
+            storePassword 'msixaplayer123'
         }
     }
 

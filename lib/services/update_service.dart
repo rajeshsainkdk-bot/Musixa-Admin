@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,10 +15,10 @@ import 'package:google_fonts/google_fonts.dart';
 class UpdateService {
   static const String manifestUrl = 'https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/version.json';
   static const String adminManifestUrl = 'https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/admin_version.json';
-  static const MethodChannel _channel = MethodChannel('com.msixa.player/app_share');
-  static const String _prefKeyLastChecked = 'msixa_last_update_check';
-  static const String _prefKeyDismissedVersion = 'msixa_dismissed_update_version';
-  static const String _prefKeyLastPromptTime = 'msixa_last_update_prompt_time';
+  static const MethodChannel _channel = MethodChannel('com.musixa.admin/app_share');
+  static const String _prefKeyLastChecked = 'musixa_last_update_check';
+  static const String _prefKeyDismissedVersion = 'musixa_dismissed_update_version';
+  static const String _prefKeyLastPromptTime = 'musixa_last_update_prompt_time';
   static bool _hasCheckedThisSession = false;
 
   /// Read exact installed package version dynamically from Android PackageManager
@@ -54,7 +54,7 @@ class UpdateService {
               ),
               const SizedBox(width: 12),
               Text(
-                isAdmin ? '🔍 Msixa Admin अपडेट चेक किया जा रहा है...' : '🔍 अपडेट चेक किया जा रहा है...',
+                isAdmin ? '🔍 Musixa Admin अपडेट चेक किया जा रहा है...' : '🔍 अपडेट चेक किया जा रहा है...',
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
             ],
@@ -177,7 +177,7 @@ class UpdateService {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '🎉 ${isAdmin ? "Msixa Player Admin" : "Msixa Player"} पहले से नवीनतम वर्ज़न पर चल रहा है!',
+              '🎉 ${isAdmin ? "Musixa Player Admin" : "Musixa Player"} पहले से नवीनतम वर्ज़न पर चल रहा है!',
               style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -448,7 +448,7 @@ class UpdateService {
                           downloadedBytes = 0;
 
                           final tempDir = Directory.systemTemp;
-                          final apkName = isAdmin ? 'msixa_admin_latest.apk' : 'msixa_player_latest.apk';
+                          final apkName = isAdmin ? 'Musixa_admin_latest.apk' : 'Musixa_player_latest.apk';
                           final apkFile = File('${tempDir.path}/$apkName');
                           if (await apkFile.exists()) {
                             await apkFile.delete();

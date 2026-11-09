@@ -162,7 +162,7 @@ jobs:
           import java.io.File
 
           class MainActivity: AudioServiceActivity() {
-              private val CHANNEL = "com.msixa.player/app_share"
+              private val CHANNEL = "com.musixa.admin/app_share"
 
               override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
                   super.configureFlutterEngine(flutterEngine)
@@ -258,7 +258,7 @@ jobs:
       - name: Run Automated Release Gate Tests
         run: |
           rm -f test/widget_test.dart
-          flutter test test/msixa_features_test.dart
+          flutter test test/musixa_features_test.dart
 
       - name: Build Musixa Admin Release APK
         run: flutter build apk --release --no-tree-shake-icons

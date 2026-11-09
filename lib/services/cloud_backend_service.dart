@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -126,8 +126,8 @@ class CloudBackendService extends ChangeNotifier {
     if (!_allUsers.any((u) => u.role == 'admin')) {
       final defaultAdmin = UserProfile(
         uid: 'admin_master_01',
-        fullName: 'Msixa Super Admin',
-        email: 'admin@msixa.com',
+        fullName: 'Musixa Super Admin',
+        email: 'admin@musixa.com',
         isEmailVerified: true,
         phoneNumber: '+919999999999',
         isPhoneVerified: true,
@@ -380,7 +380,7 @@ class CloudBackendService extends ChangeNotifier {
   }) async {
     _pendingName = fullName.trim();
     _pendingPhone = phoneNumber.trim();
-    _pendingEmail = (email != null && email.trim().isNotEmpty) ? email.trim() : 'user@msixa.com';
+    _pendingEmail = (email != null && email.trim().isNotEmpty) ? email.trim() : 'user@musixa.com';
 
     // Generate 6-digit OTP
     final code = (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
@@ -405,7 +405,7 @@ class CloudBackendService extends ChangeNotifier {
       final newUser = UserProfile(
         uid: uid,
         fullName: _pendingName ?? 'Listener',
-        email: _pendingEmail ?? 'user@msixa.com',
+        email: _pendingEmail ?? 'user@Musixa.com',
         isEmailVerified: true,
         phoneNumber: _pendingPhone ?? '',
         isPhoneVerified: true,
@@ -441,8 +441,8 @@ class CloudBackendService extends ChangeNotifier {
         (u) => u.role == 'admin',
         orElse: () => UserProfile(
           uid: 'admin_master_01',
-          fullName: 'Msixa Super Admin',
-          email: 'admin@msixa.com',
+          fullName: 'Musixa Super Admin',
+          email: 'admin@Musixa.com',
           isEmailVerified: true,
           phoneNumber: '+919999999999',
           isPhoneVerified: true,
@@ -522,7 +522,7 @@ class CloudBackendService extends ChangeNotifier {
 
     if (title.isEmpty) {
       final cleanOrig = rawTitle.replaceAll(RegExp(r'\.[a-zA-Z0-9]+$'), '').replaceAll('_', ' ').trim();
-      return cleanOrig.isNotEmpty ? cleanOrig : 'Msixa Track';
+      return cleanOrig.isNotEmpty ? cleanOrig : 'Musixa Track';
     }
 
     // 8. Capitalize Words (Title Case) for Latin words, preserving Hindi/Devanagari
@@ -672,7 +672,7 @@ class CloudBackendService extends ChangeNotifier {
       id: songId,
       title: title.trim(),
       artist: artist.trim(),
-      album: album?.trim().isNotEmpty == true ? album!.trim() : 'Msixa Originals',
+      album: album?.trim().isNotEmpty == true ? album!.trim() : 'Musixa Originals',
       duration: 220,
       streamUrl: audioPath.trim(),
       coverUrl: coverUrl?.trim().isNotEmpty == true
@@ -682,7 +682,7 @@ class CloudBackendService extends ChangeNotifier {
       subCategory: subCategory?.trim(),
       status: 'approved', // Live immediately!
       uploadedBy: 'admin',
-      uploaderName: 'Msixa Super Admin',
+      uploaderName: 'Musixa Super Admin',
       uploaderPhone: '+919999999999',
       createdAt: DateTime.now(),
     );
@@ -1111,7 +1111,7 @@ class CloudBackendService extends ChangeNotifier {
       );
     }
 
-    final fileName = 'msixa_users_export_${DateFormat("yyyyMMdd_HHmm").format(DateTime.now())}.csv';
+    final fileName = 'Musixa_users_export_${DateFormat("yyyyMMdd_HHmm").format(DateTime.now())}.csv';
     final targetPaths = [
       '/storage/emulated/0/Download/$fileName',
       '${Directory.systemTemp.path}/$fileName',
@@ -1133,8 +1133,8 @@ class CloudBackendService extends ChangeNotifier {
     // Trigger Native Share Sheet
     await Share.shareXFiles(
       [XFile(exportFile.path, mimeType: 'text/csv')],
-      subject: 'Msixa Registered Users List (${_allUsers.length} Users)',
-      text: 'Msixa Player Registered Users Excel Export (${_allUsers.length} Total Users)',
+      subject: 'Musixa Registered Users List (${_allUsers.length} Users)',
+      text: 'Musixa Player Registered Users Excel Export (${_allUsers.length} Total Users)',
     );
 
     return exportFile;
@@ -1168,7 +1168,7 @@ class CloudBackendService extends ChangeNotifier {
       );
     }
 
-    final fileName = 'msixa_uploaded_songs_${DateFormat("yyyyMMdd_HHmm").format(DateTime.now())}.csv';
+    final fileName = 'Musixa_uploaded_songs_${DateFormat("yyyyMMdd_HHmm").format(DateTime.now())}.csv';
     final targetPaths = [
       '/storage/emulated/0/Download/$fileName',
       '${Directory.systemTemp.path}/$fileName',
@@ -1190,8 +1190,8 @@ class CloudBackendService extends ChangeNotifier {
     // Trigger Native Share Sheet
     await Share.shareXFiles(
       [XFile(exportFile.path, mimeType: 'text/csv')],
-      subject: 'Msixa Community & User Uploaded Songs (${_communitySongs.length} Tracks)',
-      text: 'Msixa Player Uploaded Songs Excel Export (${_communitySongs.length} Tracks)',
+      subject: 'Musixa Community & User Uploaded Songs (${_communitySongs.length} Tracks)',
+      text: 'Musixa Player Uploaded Songs Excel Export (${_communitySongs.length} Tracks)',
     );
 
     return exportFile;

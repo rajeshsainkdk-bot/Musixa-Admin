@@ -1,4 +1,4 @@
-class Song {
+﻿class Song {
   final String id;
   final String title;
   final String artist;
@@ -130,7 +130,7 @@ class Song {
       id: json['id'] as String,
       title: json['title'] as String? ?? 'Unknown Title',
       artist: json['artist'] as String? ?? 'Unknown Artist',
-      album: json['album'] as String? ?? 'Msixa Player Catalog',
+      album: json['album'] as String? ?? 'Musixa Player Catalog',
       duration: (json['duration'] as num?)?.toInt() ?? 180,
       streamUrl: json['streamUrl'] as String? ?? '',
       coverUrl: json['coverUrl'] as String? ?? '',

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../models/song.dart';
@@ -271,7 +271,7 @@ class SongListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'This audio is streamed legally under free Creative Commons / Public Domain licenses. Msixa Player strictly honors artist rights and open source royalty-free music distributions.',
+                      'This audio is streamed legally under free Creative Commons / Public Domain licenses. Musixa Player strictly honors artist rights and open source royalty-free music distributions.',
                       style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                     ),
                   ],

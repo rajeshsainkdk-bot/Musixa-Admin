@@ -1,18 +1,18 @@
-# 📚 MSIXA PLATFORM ENGINEERING & ARCHITECTURE LIBRARY
-**Master Repository:** `https://github.com/rajeshsainkdk-bot/msixa_player.git` (Branch: `main`)  
-**Local Codebase:** `C:\Users\rajes\OneDrive\Documents\GitHub\msixa_player`  
+﻿# 📚 Musixa PLATFORM ENGINEERING & ARCHITECTURE LIBRARY
+**Master Repository:** `https://github.com/rajeshsainkdk-bot/Musixa_player.git` (Branch: `main`)  
+**Local Codebase:** `C:\Users\rajes\OneDrive\Documents\GitHub\Musixa_player`  
 **Current Release Version:** v2.0 (Dual-APK Production Release)  
-**Maintenance Owner:** Antigravity AI & Msixa Engineering  
+**Maintenance Owner:** Antigravity AI & Musixa Engineering  
 
 ---
 
 ## 🧭 Library Contents & Document Navigation
 
-This library contains the complete technical, operational, and business documentation for the Msixa streaming platform. Use the links below to access detailed specifications:
+This library contains the complete technical, operational, and business documentation for the Musixa streaming platform. Use the links below to access detailed specifications:
 
 | Document | File Path | Purpose & Description |
 | :--- | :--- | :--- |
-| **Business Requirements Document (BRD)** | [`BRD_DOCUMENT_MSIXA_PLATFORM.md`](brd/BRD_DOCUMENT_MSIXA_PLATFORM.md) | High-level vision, user personas, dual-APK architecture, functional requirements (FR-01 to FR-15), NFRs, and product roadmap. |
+| **Business Requirements Document (BRD)** | [`BRD_DOCUMENT_Musixa_PLATFORM.md`](brd/BRD_DOCUMENT_Musixa_PLATFORM.md) | High-level vision, user personas, dual-APK architecture, functional requirements (FR-01 to FR-15), NFRs, and product roadmap. |
 | **Technical & Theoretical Spec** | [`TECHNICAL_ARCHITECTURE_THEORETICAL_SPEC.md`](technical/TECHNICAL_ARCHITECTURE_THEORETICAL_SPEC.md) | Deep engineering architecture: Flutter widgets, `CloudBackendService`, duplicate matching math, `FileProvider` native channel, and CI/CD config. |
 | **QA Test Suite & Manual Checklist** | [`TEST_CASES_AND_QA_CHECKLIST.md`](testing/TEST_CASES_AND_QA_CHECKLIST.md) | 40+ comprehensive QA test cases covering Onboarding, Offline Audio, Duplicate Detection, Direct APK Sharing, and Admin CRM actions. |
 
@@ -24,22 +24,22 @@ Every continuous integration build generates two standalone APK packages stored 
 
 ```
 C:\Users\rajes\Downloads\
-├── Msixa-Player-APK\
-│   └── msixa-player-release.apk     # Public User APK (168 MB, 17 bundled Indian tracks)
-└── Msixa-Admin-APK\
-    └── msixa-admin-release.apk      # Executive Admin APK (167 MB, PIN 7777 protected)
+├── Musixa-Player-APK\
+│   └── Musixa-player-release.apk     # Public User APK (168 MB, 17 bundled Indian tracks)
+└── Musixa-Admin-APK\
+    └── Musixa-admin-release.apk      # Executive Admin APK (167 MB, PIN 7777 protected)
 ```
 
 ---
 
 ## 🔧 Future Development & Update Runbook
 
-When you want to make future updates or add new features to Msixa, follow this standard procedure:
+When you want to make future updates or add new features to Musixa, follow this standard procedure:
 
 ### 1. Codebase Directory
 Always make edits in the root repository directory:
 ```
-C:\Users\rajes\OneDrive\Documents\GitHub\msixa_player
+C:\Users\rajes\OneDrive\Documents\GitHub\Musixa_player
 ```
 
 ### 2. Key Files to Modify for Future Features
@@ -65,7 +65,7 @@ This script automatically:
 
 ## 🛡️ Security & Access Control Reference
 - **Admin App Master PIN:** `7777`
-- **Native MethodChannel:** `com.msixa.player/app_share`
-- **Native FileProvider Authority:** `com.msixa.msixa_player.fileprovider`
+- **Native MethodChannel:** `com.Musixa.player/app_share`
+- **Native FileProvider Authority:** `com.Musixa.Musixa_player.fileprovider`
 - **GitHub Token ID:** Configured in `push_and_monitor.ps1` with workflow and repo write permissions.
 

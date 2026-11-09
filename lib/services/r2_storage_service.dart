@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// - AWS SigV4 signed requests in pure Dart (zero external heavyweight AWS SDKs)
 /// - Upload audio tracks & album cover images directly to Cloudflare R2
 /// - Zero egress/bandwidth streaming with Cloudflare CDN edge URLs
-/// - Cross-app shared configuration sync between Msixa Player and Msixa Admin
+/// - Cross-app shared configuration sync between Musixa Player and Musixa Admin
 class R2StorageService extends ChangeNotifier {
   static final R2StorageService _instance = R2StorageService._internal();
   factory R2StorageService() => _instance;
@@ -40,7 +40,7 @@ class R2StorageService extends ChangeNotifier {
   String? _bucketName = defaultBucketName;
   String? _accessKeyId = defaultAccessKeyId;
   String? _secretAccessKey = defaultSecretAccessKey;
-  String? _publicDomain = defaultPublicDomain; // e.g. "pub-xxxx.r2.dev" or custom domain "music.msixa.com"
+  String? _publicDomain = defaultPublicDomain; // e.g. "pub-xxxx.r2.dev" or custom domain "music.Musixa.com"
 
   bool _isInitialized = false;
 
@@ -196,7 +196,7 @@ class R2StorageService extends ChangeNotifier {
 
     try {
       final testKey = 'test/connection_${DateTime.now().millisecondsSinceEpoch}.txt';
-      final testContent = utf8.encode('Msixa Player Cloudflare R2 Connection OK!');
+      final testContent = utf8.encode('Musixa Player Cloudflare R2 Connection OK!');
 
       final putSuccess = await _putObject(
         objectKey: testKey,

@@ -1,4 +1,4 @@
-package com.musixa.admin
+﻿package com.musixa.admin
 
 import android.content.Context
 import android.content.Intent
@@ -15,7 +15,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 
 class MainActivity: AudioServiceActivity() {
-    private val CHANNEL = "com.msixa.player/app_share"
+    private val CHANNEL = "com.musixa.admin/app_share"
     private var wakeLock: PowerManager.WakeLock? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {

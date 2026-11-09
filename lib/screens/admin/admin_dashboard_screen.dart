@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -287,12 +287,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
 
   Future<void> _launchWhatsApp(String phone) async {
     final clean = phone.replaceAll(RegExp(r'[^0-9]'), '');
-    final uri = Uri.parse('https://wa.me/$clean?text=Hello%20from%20Msixa%20Admin');
+    final uri = Uri.parse('https://wa.me/$clean?text=Hello%20from%20Musixa%20Admin');
     if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   Future<void> _launchMail(String email) async {
-    final uri = Uri.parse('mailto:$email?subject=Msixa%20Player%20Support');
+    final uri = Uri.parse('mailto:$email?subject=Musixa%20Support');
     if (await canLaunchUrl(uri)) await launchUrl(uri);
   }
 
@@ -959,7 +959,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                           final newSong = await _backend.addAdminSong(
                             title: smartTitle,
                             artist: 'Various Artists',
-                            album: playlistTitleCtrl.text.trim().isNotEmpty ? playlistTitleCtrl.text.trim() : 'Msixa Cloud Hits',
+                            album: playlistTitleCtrl.text.trim().isNotEmpty ? playlistTitleCtrl.text.trim() : 'Musixa Cloud Hits',
                             genre: targetCategory,
                             subCategory: targetSubCategory,
                             audioPath: cloudUrl,
@@ -1025,7 +1025,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   void _showAddSongDialog({String? prefillGenre, String? prefillSubCategory}) {
     final titleCtrl = TextEditingController();
     final artistCtrl = TextEditingController();
-    final albumCtrl = TextEditingController(text: 'Msixa Originals');
+    final albumCtrl = TextEditingController(text: 'Musixa Originals');
     final subCategoryCtrl = TextEditingController(text: prefillSubCategory ?? '');
     final audioCtrl = TextEditingController();
     final coverCtrl = TextEditingController();
@@ -1057,7 +1057,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 const SizedBox(height: 10),
                 _buildAdminTextField(artistCtrl, _lang.t('artist_name'), 'उदा. Hariharan'),
                 const SizedBox(height: 10),
-                _buildAdminTextField(albumCtrl, _lang.t('album_name'), 'Msixa Originals'),
+                _buildAdminTextField(albumCtrl, _lang.t('album_name'), 'Musixa Originals'),
                 const SizedBox(height: 10),
 
                 // Cloudflare R2 Upload Button
@@ -1379,7 +1379,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Bucket: ${r2.bucketName ?? "msixa-music"} • CDN Live Edge',
+                        'Bucket: ${r2.bucketName ?? "musixa-music"} • CDN Live Edge',
                         style: const TextStyle(color: Colors.white60, fontSize: 10),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -1592,7 +1592,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 const SizedBox(height: 14),
                 _buildAdminTextField(accountIdCtrl, 'Account ID', '25622df2e...'),
                 const SizedBox(height: 10),
-                _buildAdminTextField(bucketNameCtrl, 'Bucket Name', 'msixa-music'),
+                _buildAdminTextField(bucketNameCtrl, 'Bucket Name', 'musixa-music'),
                 const SizedBox(height: 10),
                 _buildAdminTextField(accessKeyCtrl, 'Access Key ID', '3857da306...'),
                 const SizedBox(height: 10),

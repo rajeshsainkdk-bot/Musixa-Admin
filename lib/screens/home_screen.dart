@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/song.dart';
@@ -138,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Icon(Icons.graphic_eq_rounded, color: AppColors.accentCyan, size: 28),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Msixa Player',
+                                    'Musixa Player',
                                     style: TextStyle(
                                       color: AppColors.textPrimary,
                                       fontSize: 26,

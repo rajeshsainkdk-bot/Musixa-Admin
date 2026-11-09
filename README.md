@@ -1,6 +1,6 @@
-# 🎵 Msixa Platform - Indian Music Streaming & Community Ecosystem
+﻿# 🎵 Musixa Platform - Indian Music Streaming & Community Ecosystem
 
-Msixa is a state-of-the-art Android music streaming, offline audio, and community distribution ecosystem engineered in **Flutter** with a native Android Kotlin integration layer. It features a dual-APK architecture designed to empower listeners, creators, and platform administrators.
+Musixa is a state-of-the-art Android music streaming, offline audio, and community distribution ecosystem engineered in **Flutter** with a native Android Kotlin integration layer. It features a dual-APK architecture designed to empower listeners, creators, and platform administrators.
 
 ---
 
@@ -8,8 +8,8 @@ Msixa is a state-of-the-art Android music streaming, offline audio, and communit
 
 | Application | Entry Point | Target Artifact | Primary Functions |
 | :--- | :--- | :--- | :--- |
-| **🎵 Msixa Player (User APK)** | `lib/main.dart` | `Msixa-Player-APK` | 17 bundled Indian tracks, 2-Step OTP onboarding, community upload screen, duplicate detection, and direct native APK sharing. |
-| **🛡️ Msixa Admin (Admin APK)** | `lib/main_admin.dart` | `Msixa-Admin-APK` | Master PIN (`7777`) access, executive KPI cards, in-app audio preview moderation, and user directory CRM (Call, WhatsApp, Email). |
+| **🎵 Musixa Player (User APK)** | `lib/main.dart` | `Musixa-Player-APK` | 17 bundled Indian tracks, 2-Step OTP onboarding, community upload screen, duplicate detection, and direct native APK sharing. |
+| **🛡️ Musixa Admin (Admin APK)** | `lib/main_admin.dart` | `Musixa-Admin-APK` | Master PIN (`7777`) access, executive KPI cards, in-app audio preview moderation, and user directory CRM (Call, WhatsApp, Email). |
 
 ---
 
@@ -17,7 +17,7 @@ Msixa is a state-of-the-art Android music streaming, offline audio, and communit
 
 The repository includes a dedicated documentation and QA library inside the [`library/`](library/) directory:
 
-- 📄 **[Business Requirements Document (BRD)](library/brd/BRD_DOCUMENT_MSIXA_PLATFORM.md)**: Product vision, user personas, functional requirements (FR-01 to FR-15), NFRs, and cloud roadmap.
+- 📄 **[Business Requirements Document (BRD)](library/brd/BRD_DOCUMENT_Musixa_PLATFORM.md)**: Product vision, user personas, functional requirements (FR-01 to FR-15), NFRs, and cloud roadmap.
 - 🛠️ **[Technical Architecture & Theoretical Spec](library/technical/TECHNICAL_ARCHITECTURE_THEORETICAL_SPEC.md)**: Module architecture, duplicate detection math, FileProvider native implementation, state machines, and CI/CD pipelines.
 - 🧪 **[QA Test Suite & Manual Checklist](library/testing/TEST_CASES_AND_QA_CHECKLIST.md)**: 40+ comprehensive test cases for functional, security, offline resilience, and edge case testing.
 - 🧭 **[Library Master Index & Update Runbook](library/README.md)**: Developer runbook for updating songs, UI, or backend connectivity.
@@ -46,7 +46,7 @@ The repository includes a dedicated documentation and QA library inside the [`li
 
 ### 4. 📤 Direct Native APK File Sharing (No Links)
 - Tap the `Share APK` card to share the actual `.apk` file directly via Android's native sharesheet (`application/vnd.android.package-archive`).
-- Powered by `com.msixa.player/app_share` MethodChannel and `androidx.core.content.FileProvider`.
+- Powered by `com.Musixa.player/app_share` MethodChannel and `androidx.core.content.FileProvider`.
 - Shares the real installer file directly to WhatsApp, Bluetooth, Nearby Share, or Telegram without any web links or text invites.
 
 ### 5. 🛡️ Executive Admin Dashboard & CRM
@@ -63,7 +63,7 @@ The repository includes a dedicated documentation and QA library inside the [`li
 ## 📁 Repository Directory Structure
 
 ```
-msixa_player/
+Musixa_player/
 ├── .github/workflows/
 │   └── build_apk.yml                 # Dual-APK CI/CD automated build workflow
 ├── android/
@@ -81,7 +81,7 @@ msixa_player/
 ├── library/                          # 📚 Comprehensive Platform Library & Docs
 │   ├── README.md                     # Library index & developer runbook
 │   ├── brd/
-│   │   └── BRD_DOCUMENT_MSIXA_PLATFORM.md
+│   │   └── BRD_DOCUMENT_Musixa_PLATFORM.md
 │   ├── technical/
 │   │   └── TECHNICAL_ARCHITECTURE_THEORETICAL_SPEC.md
 │   └── testing/

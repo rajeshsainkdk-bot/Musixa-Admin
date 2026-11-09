@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum AppLanguage { hindi, english }
@@ -8,7 +8,7 @@ class LanguageService extends ChangeNotifier {
   factory LanguageService() => _instance;
   LanguageService._internal();
 
-  static const String _prefKey = 'msixa_app_language_v3';
+  static const String _prefKey = 'Musixa_app_language_v3';
   AppLanguage _currentLanguage = AppLanguage.english; // Default is strictly English!
 
   AppLanguage get currentLanguage => _currentLanguage;
@@ -55,7 +55,7 @@ class LanguageService extends ChangeNotifier {
 
   static const Map<String, Map<String, String>> _localizedValues = {
     // Auth & Onboarding
-    'auth_title': {'hi': 'Msixa Player', 'en': 'Msixa Player'},
+    'auth_title': {'hi': 'Musixa Admin', 'en': 'Musixa Admin'},
     'auth_subtitle': {'hi': 'मोबाइल नंबर (User ID) व पासवर्ड आधारित सुरक्षित एक्सेस', 'en': 'Secure Mobile Number & Password Access'},
     'tab_login': {'hi': 'लॉगिन (Login)', 'en': 'Login'},
     'tab_register': {'hi': 'नया रजिस्ट्रेशन (Register)', 'en': 'Register'},
@@ -98,7 +98,7 @@ class LanguageService extends ChangeNotifier {
       'en': '❌ Incorrect password! Please enter the correct password.'
     },
     'welcome_back': {'hi': 'वापसी पर स्वागत है! आपकी प्लेलिस्ट व गाने लोड हो गए हैं।', 'en': 'Welcome back! Your playlists & songs have been loaded.'},
-    'welcome_new': {'hi': 'स्वागत है! आपका Msixa खाता सफलतापूर्वक बन गया है।', 'en': 'Welcome! Your Msixa account has been created successfully.'},
+    'welcome_new': {'hi': 'स्वागत है! आपका Musixa खाता सफलतापूर्वक बन गया है।', 'en': 'Welcome! Your Musixa account has been created successfully.'},
     'create_playlist': {'hi': '+ नई प्लेलिस्ट बनाएं', 'en': '+ Create Playlist'},
     'my_playlist_badge': {'hi': 'मेरी प्लेलिस्ट', 'en': 'My Playlist'},
     'playlist_name': {'hi': 'प्लेलिस्ट का नाम', 'en': 'Playlist Name'},
@@ -163,7 +163,7 @@ class LanguageService extends ChangeNotifier {
     'cancel': {'hi': 'रद्द करें (Cancel)', 'en': 'Cancel'},
 
     // Admin Dashboard
-    'admin_title': {'hi': 'Msixa Player Admin', 'en': 'Msixa Player Admin'},
+    'admin_title': {'hi': 'Musixa Admin', 'en': 'Musixa Admin'},
     'tab_pending': {'hi': 'लंबित गाने', 'en': 'Pending Songs'},
     'tab_users': {'hi': 'यूज़र्स डेटा', 'en': 'Users Directory'},
     'tab_live': {'hi': 'लाइव गाने', 'en': 'Live Songs'},

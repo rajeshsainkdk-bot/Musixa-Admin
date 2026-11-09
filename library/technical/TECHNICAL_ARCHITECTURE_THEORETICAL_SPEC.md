@@ -1,5 +1,5 @@
-# 🛠️ TECHNICAL ARCHITECTURE & THEORETICAL REFERENCE SPECIFICATION
-## System: Msixa Player & Msixa Admin Ecosystem
+﻿# 🛠️ TECHNICAL ARCHITECTURE & THEORETICAL REFERENCE SPECIFICATION
+## System: Musixa Player & Musixa Admin Ecosystem
 **Codebase Language:** Dart / Flutter (`>= 3.0.0`) & Kotlin (Android Native Layer)  
 **Document Classification:** Engineering Design & QA Test Specification  
 **Version:** 3.0 (Production Master Release with R2 CDN & OTA In-App Updater)  
@@ -12,8 +12,8 @@
 ```mermaid
 graph TB
     subgraph "Flutter UI Presentation Layer"
-        UI_USER["Msixa Player UI<br/>(Home, Library, Player, Upload, Equalizer)"]
-        UI_ADMIN["Msixa Admin UI<br/>(PIN Barrier, Moderation, Directory, Analytics)"]
+        UI_USER["Musixa Player UI<br/>(Home, Library, Player, Upload, Equalizer)"]
+        UI_ADMIN["Musixa Admin UI<br/>(PIN Barrier, Moderation, Directory, Analytics)"]
     end
 
     subgraph "State Controllers & Business Logic"
@@ -30,7 +30,7 @@ graph TB
     end
 
     subgraph "Native Android Subsystems (Kotlin & Gradle)"
-        ACT["MainActivity : AudioServiceActivity<br/>com.msixa.msixa_player"]
+        ACT["MainActivity : AudioServiceActivity<br/>com.Musixa.Musixa_player"]
         FP["androidx.core.content.FileProvider<br/>Authority: ${applicationId}.fileprovider"]
         INTENT["Android Intent System<br/>ACTION_SEND, MIME: application/vnd.android.package-archive"]
         MEDIA_SVC["AudioService (Foreground MediaBrowserService)<br/>Lockscreen & Notification Controls"]
@@ -46,7 +46,7 @@ graph TB
     PP --> DAS
     UI_USER --> ASS
 
-    ASS -->|MethodChannel: com.msixa.player/app_share| ACT
+    ASS -->|MethodChannel: com.Musixa.player/app_share| ACT
     ACT -->|Extract base.apk -> Cache| FP
     FP --> INTENT
     APS --> MEDIA_SVC
@@ -77,9 +77,9 @@ graph TB
 - **Instance Guarantee:** Implemented via a private constructor `CloudBackendService._internal()` and factory `CloudBackendService()`.
 - **Reactivity:** Extends `ChangeNotifier`. Any modification (`approveSong`, `submitUserSong`, `completeVerification`) triggers `notifyListeners()`, causing all subscribed UI views to refresh automatically without page reloads.
 - **Persistence Layer:** Uses `SharedPreferences` storing serialized JSON strings:
-  - `msixa_current_user`: Active session profile.
-  - `msixa_all_registered_users`: Full user directory array.
-  - `msixa_community_songs`: All submitted, pending, and approved tracks.
+  - `Musixa_current_user`: Active session profile.
+  - `Musixa_all_registered_users`: Full user directory array.
+  - `Musixa_community_songs`: All submitted, pending, and approved tracks.
 
 ### 3.2 User Authentication State Machine (User ID: Phone, Password-Based)
 
@@ -148,16 +148,16 @@ Let the combined song catalog be $C = C_{curated} \cup C_{community}$.
 Android prevents applications from exposing raw private filesystem paths (e.g., `file:///data/app/.../base.apk`) to external applications. Attempting to share such paths triggers a fatal `FileUriExposedException` on Android 7.0 (API 24) and above.
 
 ### 5.2 The Native Architectural Solution
-Msixa implements a native `MethodChannel` bridging Flutter to Android's secure `FileProvider`:
+Musixa implements a native `MethodChannel` bridging Flutter to Android's secure `FileProvider`:
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor User
     participant Flutter as AppShareService (Dart)
-    participant Platform as MethodChannel (com.msixa.player/app_share)
+    participant Platform as MethodChannel (com.Musixa.player/app_share)
     participant Kotlin as MainActivity.kt
-    participant Storage as Cache Storage (MsixaPlayer.apk)
+    participant Storage as Cache Storage (MusixaPlayer.apk)
     participant Provider as androidx.core.content.FileProvider
     participant Android as Android Sharesheet (WhatsApp, Bluetooth, Nearby)
 
@@ -165,9 +165,9 @@ sequenceDiagram
     Flutter->>Platform: invokeMethod('shareApk')
     Platform->>Kotlin: onMethodCall("shareApk")
     Kotlin->>Kotlin: Resolve applicationInfo.sourceDir
-    Kotlin->>Storage: Stream copy sourceDir -> cacheDir/MsixaPlayer.apk
+    Kotlin->>Storage: Stream copy sourceDir -> cacheDir/MusixaPlayer.apk
     Kotlin->>Provider: getUriForFile(this, "${packageName}.fileprovider", destApk)
-    Provider-->>Kotlin: Returns content://com.msixa.msixa_player.fileprovider/apk_cache/MsixaPlayer.apk
+    Provider-->>Kotlin: Returns content://com.Musixa.Musixa_player.fileprovider/apk_cache/MusixaPlayer.apk
     Kotlin->>Android: Intent(ACTION_SEND, MIME: application/vnd.android.package-archive)
     Android-->>User: Displays Native App Picker (WhatsApp, Bluetooth, Quick Share)
     Note over User,Android: Transmits real .apk installer file directly! Zero web links!
@@ -200,7 +200,7 @@ sequenceDiagram
 ## 6. Deep Dive: Audio Engine, Equalizer & Foreground Media Service
 
 ### 6.1 Audio Playback Engine
-Msixa uses `just_audio` coupled with `audio_service` running on an isolated background isolate:
+Musixa uses `just_audio` coupled with `audio_service` running on an isolated background isolate:
 - **Audio Formats Supported:** MP3 (MPEG-1 Audio Layer III), M4A (AAC-LC), WAV, OGG Vorbis.
 - **Buffer Management:** Dynamic buffering with `bufferedPositionStream` emitting live progress to the seek bar.
 - **Audio Routing:**
@@ -236,15 +236,15 @@ The GitHub Actions workflow (`.github/workflows/build_apk.yml`) compiles both pr
        }
    }
    ```
-3. **Target 1 Compilation (Msixa Player APK):**
+3. **Target 1 Compilation (Musixa Player APK):**
    ```bash
    flutter build apk --release --no-tree-shake-icons
-   cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/msixa-player-release.apk
+   cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Musixa-player-release.apk
    ```
-4. **Target 2 Compilation (Msixa Admin APK):**
+4. **Target 2 Compilation (Musixa Admin APK):**
    ```bash
    flutter build apk --release --target=lib/main_admin.dart --no-tree-shake-icons
-   cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/msixa-admin-release.apk
+   cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Musixa-admin-release.apk
    ```
 
 ---
@@ -252,9 +252,9 @@ The GitHub Actions workflow (`.github/workflows/build_apk.yml`) compiles both pr
 ## 8. Cloudflare R2 Cloud Storage & Zero-Egress Streaming Architecture
 
 ### 8.1 AWS SigV4 Native Dart Implementation (`R2StorageService`)
-Msixa Player avoids bulky third-party AWS SDKs by utilizing a pure-Dart AWS Signature Version 4 (SigV4) implementation:
+Musixa Player avoids bulky third-party AWS SDKs by utilizing a pure-Dart AWS Signature Version 4 (SigV4) implementation:
 - **Service Target:** Amazon S3-compatible Cloudflare R2 API (`https://25622df2e6919b63cf30e7d06532d778.r2.cloudflarestorage.com`).
-- **Bucket:** `msixa-music`.
+- **Bucket:** `Musixa-music`.
 - **Public CDN Edge:** `https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/`.
 - **Zero Egress Cost:** Streaming audio and downloading updates incurs \$0 egress bandwidth fees via Cloudflare's global edge network.
 
@@ -274,7 +274,7 @@ To eliminate delay between user registration and admin verification:
    - Song catalog: `db/songs.json`.
    - Cache-busting: `?t=${DateTime.now().millisecondsSinceEpoch}` and `Cache-Control: no-cache` prevent stale edge reads.
 2. **Secondary Local IPC Layer (Cross-App File Sync):**
-   - Shared device path: `/storage/emulated/0/Download/msixa_users.json` and internal shared file descriptors.
+   - Shared device path: `/storage/emulated/0/Download/Musixa_users.json` and internal shared file descriptors.
    - Admin panel executes a non-blocking 2-second background synchronization loop (`Timer.periodic`).
    - Newly registered users appear instantly on the Admin Dashboard without manual refreshes.
 
@@ -297,13 +297,13 @@ To eliminate delay between user registration and admin verification:
 
 ### 11.1 Continuous Deployment Flow
 1. During GitHub Actions compilation, `build_apk.yml` uploads:
-   - `build/app/outputs/flutter-apk/msixa-player-release.apk` $\rightarrow$ `update/msixa_player_latest.apk`.
+   - `build/app/outputs/flutter-apk/Musixa-player-release.apk` $\rightarrow$ `update/Musixa_player_latest.apk`.
    - Update manifest JSON $\rightarrow$ `update/version.json`:
      ```json
      {
        "version_code": 48,
        "version_name": "1.0.48",
-       "apk_url": "https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/msixa_player_latest.apk",
+       "apk_url": "https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/Musixa_player_latest.apk",
        "file_size_mb": 23.28,
        "release_notes": "Auto-Update: Realtime sync and platform enhancements!",
        "force_update": false
@@ -323,9 +323,9 @@ To eliminate delay between user registration and admin verification:
 ## 12. Production Keystore & Cryptographic Signature Specification
 
 ### 12.1 Keystore Parameters
-- **Keystore File:** `android/app/msixa_release.jks`
+- **Keystore File:** `android/app/Musixa_release.jks`
 - **Type:** PKCS12
-- **Key Alias:** `msixakey`
+- **Key Alias:** `Musixakey`
 - **Key Algorithm:** RSA 2048-bit
 - **Validity:** 10,000 Days (~27 Years)
 - **SHA-256 Fingerprint:** `E1:A5:7A:60:3B:57:75:C1:DE:A1:02:78:FB:83:18:2A:DB:8E:A8:B6:D3:FA:8C:E3:4E:23:CC:D1:98:B8:0B:6B`

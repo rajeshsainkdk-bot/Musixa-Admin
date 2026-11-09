@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -127,7 +127,7 @@ class ProfileScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user?.fullName ?? 'Msixa Listener',
+                          user?.fullName ?? 'Musixa Listener',
                           style: GoogleFonts.syne(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -335,7 +335,7 @@ class ProfileScreen extends StatelessWidget {
             // App Version Footer
             Center(
               child: Text(
-                'Msixa Player • v2.0 (Dual-APK Edition)',
+                'Musixa Player • v2.0 (Dual-APK Edition)',
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
               ),
             ),

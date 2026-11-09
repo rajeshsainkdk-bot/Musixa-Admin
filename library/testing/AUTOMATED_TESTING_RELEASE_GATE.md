@@ -1,4 +1,4 @@
-# 🛡️ Msixa Mandatory Automated Testing & Release Quality Gate Protocol
+﻿# 🛡️ Musixa Mandatory Automated Testing & Release Quality Gate Protocol
 
 **Effective Date:** Continuous / Permanent  
 **Enforced For:** Every implementation, bug fix, feature request, and release build.
@@ -21,7 +21,7 @@ No release APK shall ever be delivered or published without passing 100% of all 
                    │
                    ▼
 [2. Automated Test Suite Authoring / Extension]
-  - Add unit/integration tests to `test/msixa_features_test.dart`
+  - Add unit/integration tests to `test/Musixa_features_test.dart`
   - Cover edge cases, error conditions, and regressions
                    │
                    ▼
