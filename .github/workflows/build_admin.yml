@@ -34,7 +34,7 @@ jobs:
           cp -r android/app/src/main/res/mipmap* /tmp/icon_backup/ 2>/dev/null || true
           
           rm -rf android
-          flutter create . --platforms=android --org=com.musixa
+          flutter create . --platforms=android --org=com.musixa --project-name=musixa_admin
 
           cp -r /tmp/icon_backup/mipmap* android/app/src/main/res/ 2>/dev/null || true
 
