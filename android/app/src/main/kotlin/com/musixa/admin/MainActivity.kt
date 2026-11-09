@@ -20,12 +20,14 @@ class MainActivity: AudioServiceActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        val ctx: Context = applicationContext
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "acquireWakeLock" -> {
                     try {
                         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+                        val powerManager = ctx.getSystemService(Context.POWER_SERVICE) as PowerManager
                         if (wakeLock == null) {
                             wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MusixaAdmin:BulkUploadWakeLock")
                         }
@@ -52,7 +54,7 @@ class MainActivity: AudioServiceActivity() {
                     try {
                         val title = call.argument<String>("title") ?: "Musixa Upload"
                         val message = call.argument<String>("message") ?: "Upload Completed!"
-                        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val notificationManager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         val channelId = "musixa_upload_channel"
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             val channel = NotificationChannel(
@@ -63,10 +65,10 @@ class MainActivity: AudioServiceActivity() {
                             notificationManager.createNotificationChannel(channel)
                         }
                         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            Notification.Builder(this@MainActivity, channelId)
+                            Notification.Builder(ctx, channelId)
                         } else {
                             @Suppress("DEPRECATION")
-                            Notification.Builder(this@MainActivity)
+                            Notification.Builder(ctx)
                         }
                         builder.setSmallIcon(android.R.drawable.stat_sys_upload_done)
                             .setContentTitle(title)
@@ -84,20 +86,20 @@ class MainActivity: AudioServiceActivity() {
                         val file = File(filePath)
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            if (!this@MainActivity.packageManager.canRequestPackageInstalls()) {
+                            if (!ctx.packageManager.canRequestPackageInstalls()) {
                                 val permIntent = Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
-                                    data = android.net.Uri.parse("package:${this@MainActivity.packageName}")
+                                    data = android.net.Uri.parse("package:${ctx.packageName}")
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }
-                                this@MainActivity.startActivity(permIntent)
+                                ctx.startActivity(permIntent)
                                 result.error("NEED_PERMISSION", "Please allow installing apps from Musixa Admin in Settings", null)
                                 return@setMethodCallHandler
                             }
                         }
 
                         val apkUri = FileProvider.getUriForFile(
-                            this@MainActivity,
-                            "${this@MainActivity.applicationContext.packageName}.fileprovider",
+                            ctx,
+                            "${ctx.packageName}.fileprovider",
                             file
                         )
                         val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -105,7 +107,7 @@ class MainActivity: AudioServiceActivity() {
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
-                        this@MainActivity.startActivity(intent)
+                        ctx.startActivity(intent)
                         result.success(true)
                     } catch (e: Exception) {
                         result.error("INSTALL_ERROR", e.localizedMessage, null)
@@ -114,12 +116,12 @@ class MainActivity: AudioServiceActivity() {
                 "getAppVersion" -> {
                     try {
                         val pInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                            this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).longVersionCode
+                            ctx.packageManager.getPackageInfo(ctx.packageName, 0).longVersionCode
                         } else {
                             @Suppress("DEPRECATION")
-                            this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).versionCode.toLong()
+                            ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionCode.toLong()
                         }
-                        val versionName = this@MainActivity.packageManager.getPackageInfo(this@MainActivity.packageName, 0).versionName ?: "1.0.0"
+                        val versionName = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName ?: "1.0.0"
                         result.success(mapOf(
                             "versionCode" to pInfo,
                             "versionName" to versionName
