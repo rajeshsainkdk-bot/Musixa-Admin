@@ -34,7 +34,7 @@ class R2StorageService extends ChangeNotifier {
   static const String defaultBucketName = 'musixa-music';
   static const String defaultAccessKeyId = '3857da30609fecfde1e88f56c842f7f1';
   static const String defaultSecretAccessKey = '77ef640b75cc5d1858ef76bb88872d8baeed1c60f581d4ef0280e67a43dd4ddd';
-  static const String defaultPublicDomain = 'pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev';
+  static const String defaultPublicDomain = 'pub-cf44d2fccb1c4b2e80e2a2d171b12a04.r2.dev';
 
   String? _accountId = defaultAccountId;
   String? _bucketName = defaultBucketName;
