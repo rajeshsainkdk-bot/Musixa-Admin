@@ -71,7 +71,7 @@ class MusixaAdminApp extends StatelessWidget {
             title: 'Musixa Admin',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.darkTheme,
-            home: const AdminDashboardScreen(),
+            home: AdminDashboardScreen(onSignOut: () {}),
           );
         },
       ),
