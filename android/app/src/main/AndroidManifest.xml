@@ -24,7 +24,7 @@
 
         <!-- AudioServiceActivity for Lock Screen & Notification Bar Playback Controls -->
         <activity
-            android:name="com.ryanheise.audioservice.AudioServiceActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
