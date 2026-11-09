@@ -1,0 +1,49 @@
+name: musixa_admin
+description: "Musixa Admin Panel - Standalone Cloud Music & Storage Manager for Android."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Audio Playback Engine & Background Notification
+  just_audio: ^0.9.36
+  just_audio_background: ^0.0.1-beta.13
+  audio_service: ^0.18.12
+  
+  # Device Audio Scanner & Permissions
+  on_audio_query: ^2.9.0
+  permission_handler: ^11.3.1
+
+  # Native Sharing & File Picking
+  share_plus: ^7.2.2
+  file_picker: ^8.0.0
+  url_launcher: ^6.2.5
+  
+  # State Management
+  provider: ^6.1.2
+  
+  # Networking & Legal Online Streaming
+  http: ^1.2.0
+  cached_network_image: ^3.3.1
+  crypto: ^3.0.3
+  
+  # Local Persistence (Favorites, Playlists, Settings)
+  shared_preferences: ^2.2.2
+  
+  # UI & Styling
+  google_fonts: ^6.1.0
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+

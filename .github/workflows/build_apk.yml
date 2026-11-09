@@ -1,0 +1,562 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java Development Kit (JDK)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Recreate Android Project with Native Wrapper
+        run: |
+          rm -rf android
+          flutter create . --platforms=android --org=com.msixa
+
+      - name: Configure Android Permissions and Media Service
+        run: |
+          cat << 'EOF' > android/app/src/main/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools">
+
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+              <uses-permission android:name="android.permission.WAKE_LOCK" />
+              <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+              <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+              <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+              <!-- Storage & Installation Permissions for Auto-Update & Media Scanner -->
+              <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+              <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+              <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+
+              <!-- Package Visibility Queries for Android 11+ Package Installer Resolution -->
+              <queries>
+                  <intent>
+                      <action android:name="android.intent.action.VIEW" />
+                      <data android:mimeType="application/vnd.android.package-archive" />
+                  </intent>
+                  <intent>
+                      <action android:name="android.intent.action.INSTALL_PACKAGE" />
+                      <data android:mimeType="application/vnd.android.package-archive" />
+                  </intent>
+              </queries>
+
+              <application
+                  android:label="Msixa Player"
+                  android:name="${applicationName}"
+                  android:icon="@mipmap/ic_launcher"
+                  android:requestLegacyExternalStorage="true"
+                  android:usesCleartextTraffic="true">
+
+                  <!-- MainActivity extending AudioServiceActivity for Media Playback & APK File Sharing -->
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:launchMode="singleTop"
+                      android:theme="@style/LaunchTheme"
+                      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+                      android:hardwareAccelerated="true"
+                      android:windowSoftInputMode="adjustResize">
+                      <meta-data
+                        android:name="io.flutter.embedding.android.NormalTheme"
+                        android:resource="@style/NormalTheme"
+                        />
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
+
+                  <!-- AudioService for Background Playback & Notification Controls -->
+                  <service 
+                      android:name="com.ryanheise.audioservice.AudioService" 
+                      android:foregroundServiceType="mediaPlayback" 
+                      android:exported="true" 
+                      tools:ignore="Instantiatable">
+                      <intent-filter>
+                          <action android:name="android.media.browse.MediaBrowserService" />
+                      </intent-filter>
+                  </service>
+
+                  <!-- MediaButtonReceiver for Notification Bar and Headphone Buttons -->
+                  <receiver 
+                      android:name="com.ryanheise.audioservice.MediaButtonReceiver" 
+                      android:exported="true" 
+                      tools:ignore="Instantiatable">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MEDIA_BUTTON" />
+                      </intent-filter>
+                  </receiver>
+
+                  <!-- FileProvider for Direct APK Sharing -->
+                  <provider
+                      android:name="androidx.core.content.FileProvider"
+                      android:authorities="${applicationId}.fileprovider"
+                      android:exported="false"
+                      android:grantUriPermissions="true">
+                      <meta-data
+                          android:name="android.support.FILE_PROVIDER_PATHS"
+                          android:resource="@xml/file_paths" />
+                  </provider>
+
+                  <meta-data
+                      android:name="flutterEmbedding"
+                      android:value="2" />
+              </application>
+          </manifest>
+          EOF
+
+          mkdir -p android/app/src/main/res/xml
+          cat << 'EOF' > android/app/src/main/res/xml/file_paths.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <paths xmlns:android="http://schemas.android.com/apk/res/android">
+              <root-path name="root" path="." />
+              <cache-path name="apk_cache" path="." />
+              <external-cache-path name="ext_cache" path="." />
+              <files-path name="files" path="." />
+              <external-path name="ext_files" path="." />
+              <external-files-path name="ext_downloads" path="." />
+          </paths>
+          EOF
+
+          rm -rf android/app/src/main/kotlin/com/msixa/*
+          mkdir -p android/app/src/main/kotlin/com/msixa/msixa_player
+          cat << 'EOF' > android/app/src/main/kotlin/com/msixa/msixa_player/MainActivity.kt
+          package com.msixa.msixa_player
+
+          import android.content.Intent
+          import android.content.pm.PackageManager
+          import androidx.core.content.FileProvider
+          import com.ryanheise.audioservice.AudioServiceActivity
+          import io.flutter.embedding.engine.FlutterEngine
+          import io.flutter.plugin.common.MethodChannel
+          import java.io.File
+          import java.io.FileInputStream
+          import java.io.FileOutputStream
+
+          class MainActivity: AudioServiceActivity() {
+              private val CHANNEL = "com.msixa.player/app_share"
+              private var wakeLock: android.os.PowerManager.WakeLock? = null
+
+              override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+                  super.configureFlutterEngine(flutterEngine)
+                  MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+                      if (call.method == "acquireWakeLock") {
+                          try {
+                              window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                              val powerManager = getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager
+                              if (wakeLock == null) {
+                                  wakeLock = powerManager.newWakeLock(android.os.PowerManager.PARTIAL_WAKE_LOCK, "Msixa:BulkUploadWakeLock")
+                              }
+                              if (wakeLock?.isHeld != true) {
+                                  wakeLock?.acquire(45 * 60 * 1000L)
+                              }
+                              result.success(true)
+                          } catch (e: Exception) {
+                              result.error("WAKELOCK_ERR", e.localizedMessage, null)
+                          }
+                      } else if (call.method == "releaseWakeLock") {
+                          try {
+                              window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                              if (wakeLock?.isHeld == true) {
+                                  wakeLock?.release()
+                              }
+                              result.success(true)
+                          } catch (e: Exception) {
+                              result.error("WAKELOCK_RELEASE_ERR", e.localizedMessage, null)
+                          }
+                      } else if (call.method == "showUploadNotification") {
+                          try {
+                              val title = call.argument<String>("title") ?: "Msixa Bulk Upload"
+                              val message = call.argument<String>("message") ?: "Upload Completed!"
+                              val notificationManager = getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+                              val channelId = "msixa_upload_channel"
+                              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                  val channel = android.app.NotificationChannel(
+                                      channelId,
+                                      "Msixa Upload Status",
+                                      android.app.NotificationManager.IMPORTANCE_HIGH
+                                  ).apply {
+                                      description = "Notifications for bulk upload completion"
+                                  }
+                                  notificationManager.createNotificationChannel(channel)
+                              }
+                              val builder = androidx.core.app.NotificationCompat.Builder(this, channelId)
+                                  .setSmallIcon(android.R.drawable.stat_sys_upload_done)
+                                  .setContentTitle(title)
+                                  .setContentText(message)
+                                  .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+                                  .setAutoCancel(true)
+                              notificationManager.notify(101, builder.build())
+                              result.success(true)
+                          } catch (e: Exception) {
+                              result.error("NOTIF_ERR", e.localizedMessage, null)
+                          }
+                      } else if (call.method == "shareApk") {
+                          try {
+                              val appInfo = applicationContext.applicationInfo
+                              val srcApk = File(appInfo.sourceDir)
+                              val destApk = File(cacheDir, "MsixaPlayer.apk")
+                              FileInputStream(srcApk).use { input ->
+                                  FileOutputStream(destApk).use { output ->
+                                      input.copyTo(output)
+                                  }
+                              }
+
+                              val apkUri = FileProvider.getUriForFile(
+                                  this,
+                                  "${applicationContext.packageName}.fileprovider",
+                                  destApk
+                              )
+
+                              val intent = Intent(Intent.ACTION_SEND).apply {
+                                  type = "application/vnd.android.package-archive"
+                                  putExtra(Intent.EXTRA_STREAM, apkUri)
+                                  putExtra(Intent.EXTRA_SUBJECT, "Msixa Player APK")
+                                  putExtra(Intent.EXTRA_TEXT, "Msixa Player APK")
+                                  addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                              }
+
+                              startActivity(Intent.createChooser(intent, "Share Msixa Player APK"))
+                              result.success(true)
+                          } catch (e: Exception) {
+                              result.error("SHARE_ERROR", e.localizedMessage, null)
+                          }
+                      } else if (call.method == "canInstallPackages") {
+                          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                              result.success(packageManager.canRequestPackageInstalls())
+                          } else {
+                              result.success(true)
+                          }
+                      } else if (call.method == "openInstallSettings") {
+                          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                              try {
+                                  val permIntent = Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                                      data = android.net.Uri.parse("package:$packageName")
+                                      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                  }
+                                  startActivity(permIntent)
+                                  result.success(true)
+                              } catch (e: Exception) {
+                                  try {
+                                      val fallbackIntent = Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS).apply {
+                                          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                      }
+                                      startActivity(fallbackIntent)
+                                      result.success(true)
+                                  } catch (fe: Exception) {
+                                      result.error("SETTINGS_ERROR", fe.localizedMessage, null)
+                                  }
+                              }
+                          } else {
+                              result.success(true)
+                          }
+                      } else if (call.method == "installApk") {
+                          try {
+                              val filePath = call.argument<String>("filePath") ?: throw IllegalArgumentException("filePath required")
+                              val srcFile = File(filePath)
+                              if (!srcFile.exists()) {
+                                  throw java.io.FileNotFoundException("APK file not found: $filePath")
+                              }
+
+                              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                  if (!packageManager.canRequestPackageInstalls()) {
+                                      val permIntent = Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                                          data = android.net.Uri.parse("package:$packageName")
+                                          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                      }
+                                      startActivity(permIntent)
+                                      result.error("NEED_PERMISSION", "Please allow installing apps from Msixa Player in Settings", null)
+                                      return@setMethodCallHandler
+                                  }
+                              }
+
+                              // Ensure file is world-readable so PackageInstaller daemon can read it
+                              srcFile.setReadable(true, false)
+
+                              // Also copy to external app files dir for reliable installation across all Android versions
+                              val extDir = getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS) ?: cacheDir
+                              val targetFile = File(extDir, "msixa_player_latest.apk")
+                              try {
+                                  srcFile.copyTo(targetFile, overwrite = true)
+                                  targetFile.setReadable(true, false)
+                              } catch (_: Exception) {}
+
+                              val fileToInstall = if (targetFile.exists() && targetFile.length() > 0) targetFile else srcFile
+                              val apkUri = FileProvider.getUriForFile(
+                                  this,
+                                  "${applicationContext.packageName}.fileprovider",
+                                  fileToInstall
+                              )
+
+                              val installIntent = Intent(Intent.ACTION_VIEW).apply {
+                                  setDataAndType(apkUri, "application/vnd.android.package-archive")
+                                  addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                  addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                                  addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                  addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                  putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+                              }
+
+                              // Grant URI read permission to all resolving installer packages
+                              val resInfoList = packageManager.queryIntentActivities(installIntent, PackageManager.MATCH_DEFAULT_ONLY)
+                              for (resolveInfo in resInfoList) {
+                                  val pkg = resolveInfo.activityInfo.packageName
+                                  grantUriPermission(pkg, apkUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                              }
+
+                              startActivity(installIntent)
+                              result.success(true)
+                          } catch (e: Exception) {
+                              result.error("INSTALL_ERROR", e.localizedMessage, null)
+                          }
+                      } else if (call.method == "getAppVersion") {
+                          try {
+                              val pInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                                  packageManager.getPackageInfo(packageName, 0).longVersionCode
+                              } else {
+                                  @Suppress("DEPRECATION")
+                                  packageManager.getPackageInfo(packageName, 0).versionCode.toLong()
+                              }
+                              val versionName = packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0.0"
+                              result.success(mapOf(
+                                  "versionCode" to pInfo,
+                                  "versionName" to versionName
+                              ))
+                          } catch (e: Exception) {
+                              result.error("VERSION_ERROR", e.localizedMessage, null)
+                          }
+                      } else {
+                          result.notImplemented()
+                      }
+                  }
+              }
+          }
+          EOF
+
+      - name: Configure Android Gradle Settings and Resolve Duplicate Kotlin Classes
+        run: |
+          sed -i 's/minSdkVersion .*/minSdkVersion = 21/' android/app/build.gradle || true
+          sed -i 's/minSdk = .*/minSdk = 21/' android/app/build.gradle || true
+
+          cat << 'EOF' >> android/app/build.gradle
+
+          configurations.all {
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+              resolutionStrategy {
+                  eachDependency { details ->
+                      if (details.requested.group == 'org.jetbrains.kotlin' && details.requested.name.startsWith('kotlin-stdlib')) {
+                          details.useVersion('1.8.22')
+                      }
+                  }
+              }
+          }
+
+          dependencies {
+              implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
+              constraints {
+                  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22") {
+                      because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+                  }
+                  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22") {
+                      because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+                  }
+              }
+          }
+          EOF
+
+          cat << 'EOF' >> android/build.gradle
+
+          allprojects {
+              configurations.all {
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+                  resolutionStrategy.eachDependency { details ->
+                      if (details.requested.group == 'org.jetbrains.kotlin' && details.requested.name.startsWith('kotlin-stdlib')) {
+                          details.useVersion '1.8.22'
+                      }
+                  }
+              }
+          }
+
+          subprojects {
+              project.configurations.all {
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+                  resolutionStrategy.eachDependency { details ->
+                      if (details.requested.group == 'org.jetbrains.kotlin' && details.requested.name.startsWith('kotlin-stdlib')) {
+                          details.useVersion '1.8.22'
+                      }
+                  }
+              }
+          }
+          EOF
+
+      - name: Configure Production Signing Keystore
+        run: |
+          cat << 'EOF' | base64 -d > android/app/msixa_release.jks
+          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
+          EOF
+
+          python - << 'EOF'
+          with open('android/app/build.gradle', 'r') as f:
+              content = f.read()
+
+          signing_block = """
+              signingConfigs {
+                  release {
+                      storeFile file('msixa_release.jks')
+                      storePassword 'msixaplayer123'
+                      keyAlias 'msixakey'
+                      keyPassword 'msixaplayer123'
+                  }
+              }
+          """
+
+          if 'signingConfigs {' not in content:
+              content = content.replace('buildTypes {', signing_block + '\n    buildTypes {')
+
+          content = content.replace('signingConfig = signingConfigs.debug', 'signingConfig = signingConfigs.release')
+          content = content.replace('signingConfig signingConfigs.debug', 'signingConfig signingConfigs.release')
+
+          with open('android/app/build.gradle', 'w') as f:
+              f.write(content)
+          print("Successfully configured permanent production signing key in build.gradle")
+          EOF
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Run Test Suite
+        run: |
+          rm -f test/widget_test.dart
+          flutter test test/msixa_features_test.dart
+
+      - name: Build User APK (Release)
+        run: |
+          flutter build apk --release --build-name=1.0.${{ github.run_number }} --build-number=${{ github.run_number }} --no-tree-shake-icons
+          cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/msixa-player-release.apk
+
+      - name: Build Admin Control APK (Release)
+        run: |
+          # Configure unique Application ID and App Label for Admin so both apps install side-by-side on same device
+          sed -i -E 's/applicationId[[:space:]=]+"[^"]+"/applicationId = "com.msixa.admin"/' android/app/build.gradle || true
+          sed -i 's/applicationId "com.msixa.msixa_player"/applicationId "com.msixa.admin"/' android/app/build.gradle || true
+          sed -i 's/applicationId "com.msixa.player"/applicationId "com.msixa.admin"/' android/app/build.gradle || true
+          sed -i 's/android:label="Msixa Player"/android:label="Msixa Player Admin"/' android/app/src/main/AndroidManifest.xml || true
+          rm -rf build/app/outputs/flutter-apk/app-release.apk
+
+          flutter build apk --release --target=lib/main_admin.dart --build-name=1.0.${{ github.run_number }} --build-number=${{ github.run_number }} --no-tree-shake-icons
+          cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/msixa-admin-release.apk
+
+      - name: Deploy Live Dual OTA Update Packages to Cloudflare R2
+        run: |
+          pip install boto3
+          python - << 'EOF'
+          import boto3, os, json
+
+          s3 = boto3.client(
+              's3',
+              endpoint_url='https://25622df2e6919b63cf30e7d06532d778.r2.cloudflarestorage.com',
+              aws_access_key_id='3857da30609fecfde1e88f56c842f7f1',
+              aws_secret_access_key='77ef640b75cc5d1858ef76bb88872d8baeed1c60f581d4ef0280e67a43dd4ddd',
+              region_name='auto'
+          )
+
+          run_num = int(os.environ.get('GITHUB_RUN_NUMBER', 1))
+
+          # 1. Deploy Player App OTA Update
+          player_apk = 'build/app/outputs/flutter-apk/msixa-player-release.apk'
+          if os.path.exists(player_apk):
+              size_mb = round(os.path.getsize(player_apk) / (1024 * 1024), 2)
+              print(f"Uploading {player_apk} ({size_mb} MB) to R2 update/msixa_player_latest.apk...")
+              s3.upload_file(
+                  player_apk,
+                  'msixa-music',
+                  'update/msixa_player_latest.apk',
+                  ExtraArgs={'ContentType': 'application/vnd.android.package-archive'}
+              )
+
+              manifest = {
+                  'version_code': run_num,
+                  'version_name': f"1.0.{run_num}",
+                  'apk_url': 'https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/msixa_player_latest.apk',
+                  'file_size_mb': size_mb,
+                  'release_notes': 'Msixa Player OTA Auto-Update: Realtime sync and platform enhancements!',
+                  'force_update': False
+              }
+              print(f"Deploying Player update manifest: {manifest}")
+              s3.put_object(
+                  Bucket='msixa-music',
+                  Key='update/version.json',
+                  Body=json.dumps(manifest),
+                  ContentType='application/json'
+              )
+              print("Player OTA Auto-Update successfully deployed!")
+
+          # 2. Deploy Admin Control App OTA Update
+          admin_apk = 'build/app/outputs/flutter-apk/msixa-admin-release.apk'
+          if os.path.exists(admin_apk):
+              admin_size_mb = round(os.path.getsize(admin_apk) / (1024 * 1024), 2)
+              print(f"Uploading {admin_apk} ({admin_size_mb} MB) to R2 update/msixa_admin_latest.apk...")
+              s3.upload_file(
+                  admin_apk,
+                  'msixa-music',
+                  'update/msixa_admin_latest.apk',
+                  ExtraArgs={'ContentType': 'application/vnd.android.package-archive'}
+              )
+
+              admin_manifest = {
+                  'version_code': run_num,
+                  'version_name': f"1.0.{run_num}",
+                  'apk_url': 'https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/msixa_admin_latest.apk',
+                  'file_size_mb': admin_size_mb,
+                  'release_notes': 'Msixa Admin OTA Auto-Update: Background uploading, R2 storage monitor & real-time sync!',
+                  'force_update': False
+              }
+              print(f"Deploying Admin update manifest: {admin_manifest}")
+              s3.put_object(
+                  Bucket='msixa-music',
+                  Key='update/admin_version.json',
+                  Body=json.dumps(admin_manifest),
+                  ContentType='application/json'
+              )
+              print("Admin OTA Auto-Update successfully deployed!")
+          EOF
+
+      - name: Upload User APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Msixa-Player-APK
+          path: build/app/outputs/flutter-apk/msixa-player-release.apk
+
+      - name: Upload Admin APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Msixa-Admin-APK
+          path: build/app/outputs/flutter-apk/msixa-admin-release.apk
