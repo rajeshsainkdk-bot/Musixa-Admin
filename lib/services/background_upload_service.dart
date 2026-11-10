@@ -1,4 +1,4 @@
-﻿import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 
 /// Service to handle background wake locks and status bar notifications
 /// so bulk audio uploads never stop when the device locks or screen turns off.

@@ -1,10 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/player_provider.dart';
 import '../theme/app_colors.dart';
 import '../screens/now_playing_screen.dart';
+import 'song_thumbnail_widget.dart';
 
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({Key? key}) : super(key: key);
@@ -15,12 +14,6 @@ class MiniPlayer extends StatelessWidget {
       builder: (context, provider, child) {
         final currentSong = provider.currentSong;
         if (currentSong == null) return const SizedBox.shrink();
-
-        final progress = provider.totalDuration.inMilliseconds > 0
-            ? (provider.currentPosition.inMilliseconds /
-                    provider.totalDuration.inMilliseconds)
-                .clamp(0.0, 1.0)
-            : 0.0;
 
         return GestureDetector(
           onTap: () {
@@ -40,7 +33,7 @@ class MiniPlayer extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.surface.withOpacity(0.85),
+              color: const Color(0xFF131A2A),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: AppColors.primary.withOpacity(0.35),
@@ -61,130 +54,123 @@ class MiniPlayer extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      child: Row(
-                        children: [
-                          // Thumbnail
-                          Hero(
-                            tag: 'current_song_art',
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: SizedBox(
-                                width: 46,
-                                height: 46,
-                                child: currentSong.coverUrl.startsWith('http')
-                                    ? CachedNetworkImage(
-                                        imageUrl: currentSong.coverUrl,
-                                        fit: BoxFit.cover,
-                                        errorWidget: (_, __, ___) => Container(
-                                          color: AppColors.card,
-                                          child: const Icon(Icons.music_note, color: AppColors.accentCyan),
-                                        ),
-                                      )
-                                    : Container(
-                                        color: AppColors.card,
-                                        child: const Icon(Icons.music_note, color: AppColors.accentCyan),
-                                      ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Row(
+                      children: [
+                        // Thumbnail with AI dynamic artwork
+                        Hero(
+                          tag: 'current_song_art',
+                          child: SongThumbnailWidget(
+                            song: currentSong,
+                            size: 46,
+                            borderRadius: 12,
+                            isPlaying: provider.isPlaying,
+                            showVisualizerWhenPlaying: false,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // Title and Artist
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                currentSong.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-
-                          // Title and Artist
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  currentSong.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
+                              const SizedBox(height: 2),
+                              Text(
+                                currentSong.artist,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: AppColors.accentCyan,
+                                  fontSize: 12,
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  currentSong.artist,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Favorite Heart
+                        IconButton(
+                          icon: Icon(
+                            currentSong.isFavorite
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            color: currentSong.isFavorite
+                                ? AppColors.accentPink
+                                : AppColors.textMuted,
+                            size: 22,
+                          ),
+                          onPressed: () => provider.toggleFavorite(currentSong),
+                        ),
+
+                        // Play / Pause Button
+                        IconButton(
+                          icon: provider.isBuffering
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
                                     color: AppColors.accentCyan,
-                                    fontSize: 12,
                                   ),
+                                )
+                              : Icon(
+                                  provider.isPlaying
+                                      ? Icons.pause_circle_filled_rounded
+                                      : Icons.play_circle_fill_rounded,
+                                  color: AppColors.accentCyan,
+                                  size: 36,
                                 ),
-                              ],
-                            ),
-                          ),
+                          onPressed: () => provider.togglePlayPause(),
+                        ),
 
-                          // Favorite Heart
-                          IconButton(
-                            icon: Icon(
-                              currentSong.isFavorite
-                                  ? Icons.favorite_rounded
-                                  : Icons.favorite_border_rounded,
-                              color: currentSong.isFavorite
-                                  ? AppColors.accentPink
-                                  : AppColors.textMuted,
-                              size: 22,
-                            ),
-                            onPressed: () => provider.toggleFavorite(currentSong),
+                        // Next Song Button
+                        IconButton(
+                          icon: const Icon(
+                            Icons.skip_next_rounded,
+                            color: AppColors.textPrimary,
+                            size: 26,
                           ),
-
-                          // Play / Pause Button
-                          IconButton(
-                            icon: provider.isBuffering
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: AppColors.accentCyan,
-                                    ),
-                                  )
-                                : Icon(
-                                    provider.isPlaying
-                                        ? Icons.pause_circle_filled_rounded
-                                        : Icons.play_circle_fill_rounded,
-                                    color: AppColors.accentCyan,
-                                    size: 36,
-                                  ),
-                            onPressed: () => provider.togglePlayPause(),
-                          ),
-
-                          // Next Song Button
-                          IconButton(
-                            icon: const Icon(
-                              Icons.skip_next_rounded,
-                              color: AppColors.textPrimary,
-                              size: 26,
-                            ),
-                            onPressed: () => provider.next(),
-                          ),
-                        ],
-                      ),
+                          onPressed: () => provider.next(),
+                        ),
+                      ],
                     ),
+                  ),
 
-                    // Neon Progress Indicator Strip at bottom of mini player
-                    SizedBox(
-                      height: 3,
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: AppColors.cardLight.withOpacity(0.3),
-                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentCyan),
-                      ),
+                  // Neon Progress Indicator Strip at bottom of mini player - isolated in StreamBuilder
+                  SizedBox(
+                    height: 3,
+                    child: StreamBuilder<Duration>(
+                      stream: provider.positionStream,
+                      initialData: provider.currentPosition,
+                      builder: (context, snapshot) {
+                        final pos = snapshot.data ?? provider.currentPosition;
+                        final tot = provider.totalDuration.inMilliseconds;
+                        final p = tot > 0 ? (pos.inMilliseconds / tot).clamp(0.0, 1.0) : 0.0;
+                        return LinearProgressIndicator(
+                          value: p,
+                          backgroundColor: AppColors.cardLight.withOpacity(0.3),
+                          valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentCyan),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

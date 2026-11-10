@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -1387,29 +1387,40 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     ],
                   ),
                 ),
+                const SizedBox(width: 6),
                 IconButton(
                   icon: _isLoadingStorageStats
                       ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00E5FF)))
-                      : const Icon(Icons.refresh_rounded, size: 16, color: Color(0xFF00E5FF)),
-                  tooltip: 'स्टोरेज रिफ्रेश करें',
+                      : const Icon(Icons.refresh_rounded, size: 18, color: Color(0xFF00E5FF)),
+                  tooltip: _lang.isHindi ? 'स्टोरेज रिफ्रेश करें' : 'Refresh Storage',
                   visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                   onPressed: _refreshStorageStats,
                 ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E293B),
-                    foregroundColor: const Color(0xFF00E5FF),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    shape: RoundedRectangleBorder(
+                const SizedBox(width: 4),
+                InkWell(
+                  onTap: _showR2SettingsDialog,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(color: const Color(0xFF00E5FF).withOpacity(0.3)),
+                      border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.35)),
                     ),
-                    elevation: 0,
-                    visualDensity: VisualDensity.compact,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.settings_rounded, size: 13, color: Color(0xFF00E5FF)),
+                        SizedBox(width: 4),
+                        Text(
+                          'Settings',
+                          style: TextStyle(color: Color(0xFF00E5FF), fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                   ),
-                  icon: const Icon(Icons.settings_rounded, size: 12),
-                  label: const Text('Settings', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                  onPressed: _showR2SettingsDialog,
                 ),
               ],
             ),
@@ -1427,7 +1438,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             ),
             const SizedBox(height: 8),
 
-            // Used & Remaining Metrics
+            // Used & Remaining Metrics (respects English/Hindi language mode)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -1435,7 +1446,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   text: TextSpan(
                     style: const TextStyle(fontSize: 11, color: Colors.white70),
                     children: [
-                      const TextSpan(text: 'उपयोग (Used): ', style: TextStyle(color: Colors.grey)),
+                      TextSpan(
+                        text: _lang.isHindi ? 'उपयोग (Used): ' : 'Used: ',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                       TextSpan(
                         text: usedMb < 1024 ? '${usedMb.toStringAsFixed(1)} MB' : '${usedGb.toStringAsFixed(2)} GB',
                         style: TextStyle(color: progressColor, fontWeight: FontWeight.bold),
@@ -1448,13 +1462,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   text: TextSpan(
                     style: const TextStyle(fontSize: 11, color: Colors.white70),
                     children: [
-                      const TextSpan(text: 'बची हुई (Free): ', style: TextStyle(color: Colors.grey)),
+                      TextSpan(
+                        text: _lang.isHindi ? 'बची हुई (Free): ' : 'Free: ',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                       TextSpan(
                         text: '${remainingGb.toStringAsFixed(2)} GB',
                         style: const TextStyle(color: Color(0xFF00E5FF), fontWeight: FontWeight.bold),
                       ),
                       TextSpan(
-                        text: ' (~$estimatedSongsRemaining गाने)',
+                        text: ' (~$estimatedSongsRemaining ${_lang.isHindi ? "गाने" : "Songs"})',
                         style: const TextStyle(color: Colors.white54, fontSize: 10),
                       ),
                     ],
@@ -1483,36 +1500,44 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         backgroundColor: const Color(0xFF131A2A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
-          children: const [
-            Icon(Icons.pie_chart_rounded, color: Color(0xFF00E5FF), size: 22),
-            SizedBox(width: 8),
+          children: [
+            const Icon(Icons.pie_chart_rounded, color: Color(0xFF00E5FF), size: 22),
+            const SizedBox(width: 8),
             Text(
-              'Cloudflare R2 स्टोरेज विवरण',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              _lang.isHindi ? 'Cloudflare R2 स्टोरेज विवरण' : 'Cloudflare R2 Storage Details',
+              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildStorageDetailRow('कुल मुफ़्त कोटा (Free Plan):', '10.00 GB (10,240 MB)', Colors.white),
+            _buildStorageDetailRow(
+              _lang.isHindi ? 'कुल मुफ़्त कोटा (Free Plan):' : 'Total Free Quota (Free Plan):',
+              '10.00 GB (10,240 MB)',
+              Colors.white,
+            ),
             const Divider(color: Colors.white10),
             _buildStorageDetailRow(
-              'उपयोग की गई स्टोरेज (Used):',
+              _lang.isHindi ? 'उपयोग की गई स्टोरेज (Used):' : 'Used Storage:',
               '${usedMb < 1024 ? "${usedMb.toStringAsFixed(1)} MB" : "${usedGb.toStringAsFixed(2)} GB"} (${usedPercentage.toStringAsFixed(1)}%)',
               const Color(0xFFFFB300),
             ),
             const Divider(color: Colors.white10),
             _buildStorageDetailRow(
-              'बची हुई मुफ़्त स्टोरेज (Remaining):',
+              _lang.isHindi ? 'बची हुई मुफ़्त स्टोरेज (Remaining):' : 'Remaining Free Storage:',
               '${remainingGb.toStringAsFixed(2)} GB (${(100 - usedPercentage).toStringAsFixed(1)}% Free)',
               const Color(0xFF10B981),
             ),
             const Divider(color: Colors.white10),
-            _buildStorageDetailRow('कुल क्लाउड फ़ाइलें (Files):', '$totalObjects Objects', Colors.cyanAccent),
+            _buildStorageDetailRow(
+              _lang.isHindi ? 'कुल क्लाउड फ़ाइलें (Files):' : 'Total Cloud Files:',
+              '$totalObjects Objects',
+              Colors.cyanAccent,
+            ),
             const Divider(color: Colors.white10),
             _buildStorageDetailRow(
-              'अनुमानित शेष गाने (Can Upload):',
+              _lang.isHindi ? 'अनुमानित शेष गाने (Can Upload):' : 'Estimated Songs Remaining:',
               '~$estimatedSongsRemaining MP3 Songs',
               const Color(0xFF00E5FF),
             ),
@@ -1524,7 +1549,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               Navigator.pop(ctx);
               _refreshStorageStats();
             },
-            child: const Text('रिफ्रेश (Refresh)', style: TextStyle(color: Color(0xFF00E5FF))),
+            child: Text(
+              _lang.isHindi ? 'रिफ्रेश (Refresh)' : 'Refresh',
+              style: const TextStyle(color: Color(0xFF00E5FF)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFFB300), foregroundColor: Colors.black),
@@ -1532,7 +1560,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               Navigator.pop(ctx);
               _showR2SettingsDialog();
             },
-            child: const Text('R2 सेटिंग्स', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(
+              _lang.isHindi ? 'R2 सेटिंग्स' : 'R2 Settings',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),

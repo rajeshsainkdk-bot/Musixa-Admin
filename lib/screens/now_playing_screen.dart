@@ -220,11 +220,18 @@ class NowPlayingScreen extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
-                      // Smooth Scrubbing Bar & Timers with Drag-Freeze
-                      AudioScrubberBar(
-                        currentPosition: provider.currentPosition,
-                        totalDuration: provider.totalDuration,
-                        onSeek: (pos) => provider.seek(pos),
+                      // Smooth Scrubbing Bar & Timers with Drag-Freeze - reactive StreamBuilder
+                      StreamBuilder<Duration>(
+                        stream: provider.positionStream,
+                        initialData: provider.currentPosition,
+                        builder: (context, snapshot) {
+                          final pos = snapshot.data ?? provider.currentPosition;
+                          return AudioScrubberBar(
+                            currentPosition: pos,
+                            totalDuration: provider.totalDuration,
+                            onSeek: (seekPos) => provider.seek(seekPos),
+                          );
+                        },
                       ),
 
                       const SizedBox(height: 16),

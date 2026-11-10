@@ -1,4 +1,4 @@
-﻿package com.musixa.admin
+package com.musixa.admin
 
 import android.content.Context
 import android.content.Intent

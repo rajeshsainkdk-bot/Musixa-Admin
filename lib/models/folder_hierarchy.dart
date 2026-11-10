@@ -78,3 +78,4 @@ class DetectedFolderHierarchy {
     return pathOrUri;
   }
 }
+
