@@ -13,8 +13,8 @@ import 'package:google_fonts/google_fonts.dart';
 /// - Launches native Android package installer automatically via FileProvider
 /// - Supports both user-initiated check & silent app-startup auto-prompt
 class UpdateService {
-  static const String manifestUrl = 'https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/version.json';
-  static const String adminManifestUrl = 'https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/admin_version.json';
+  static const String manifestUrl = 'https://pub-cf44d2fccb1c4b2e80e2a2d171b12a04.r2.dev/update/version.json';
+  static const String adminManifestUrl = 'https://pub-cf44d2fccb1c4b2e80e2a2d171b12a04.r2.dev/update/admin_version.json';
   static const MethodChannel _channel = MethodChannel('com.musixa.admin/app_share');
   static const String _prefKeyLastChecked = 'musixa_last_update_check';
   static const String _prefKeyDismissedVersion = 'musixa_dismissed_update_version';
