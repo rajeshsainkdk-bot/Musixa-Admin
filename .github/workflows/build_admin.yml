@@ -300,7 +300,13 @@ jobs:
                   Body=json.dumps(admin_manifest),
                   ContentType='application/json'
               )
-              print("Musixa Admin OTA Update successfully deployed to Cloudflare R2!")
+              s3.put_object(
+                  Bucket='msixa-music',
+                  Key='update/admin_version.json',
+                  Body=json.dumps(admin_manifest),
+                  ContentType='application/json'
+              )
+              print("Musixa Admin OTA Update successfully deployed to Cloudflare R2 (both musixa_admin_version.json and admin_version.json)!")
           EOF
 
       - name: Upload Musixa Admin Release APK
