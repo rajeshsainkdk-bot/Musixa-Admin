@@ -263,6 +263,46 @@ jobs:
       - name: Build Musixa Admin Release APK
         run: flutter build apk --release --no-tree-shake-icons
 
+      - name: Deploy Musixa Admin OTA Update Package to Cloudflare R2
+        run: |
+          pip install boto3
+          python - << 'EOF'
+          import boto3, os, json
+          s3 = boto3.client(
+              's3',
+              endpoint_url='https://25622df2e6919b63cf30e7d06532d778.r2.cloudflarestorage.com',
+              aws_access_key_id='3857da30609fecfde1e88f56c842f7f1',
+              aws_secret_access_key='77ef640b75cc5d1858ef76bb88872d8baeed1c60f581d4ef0280e67a43dd4ddd',
+              region_name='auto'
+          )
+          run_num = int(os.environ.get('GITHUB_RUN_NUMBER', 1))
+          admin_apk = 'build/app/outputs/flutter-apk/app-release.apk'
+          if os.path.exists(admin_apk):
+              size_mb = round(os.path.getsize(admin_apk) / (1024 * 1024), 2)
+              print(f"Uploading {admin_apk} ({size_mb} MB) to R2 update/musixa_admin_latest.apk...")
+              s3.upload_file(
+                  admin_apk,
+                  'msixa-music',
+                  'update/musixa_admin_latest.apk',
+                  ExtraArgs={'ContentType': 'application/vnd.android.package-archive'}
+              )
+              admin_manifest = {
+                  'version_code': run_num,
+                  'version_name': f"1.0.{run_num}",
+                  'apk_url': 'https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/musixa_admin_latest.apk',
+                  'file_size_mb': size_mb,
+                  'release_notes': "Musixa Admin Pro: Real-time Cloudflare R2 song manager, user sync, video catalog & analytics!",
+                  'force_update': False
+              }
+              s3.put_object(
+                  Bucket='msixa-music',
+                  Key='update/musixa_admin_version.json',
+                  Body=json.dumps(admin_manifest),
+                  ContentType='application/json'
+              )
+              print("Musixa Admin OTA Update successfully deployed to Cloudflare R2!")
+          EOF
+
       - name: Upload Musixa Admin Release APK
         uses: actions/upload-artifact@v4
         with:
