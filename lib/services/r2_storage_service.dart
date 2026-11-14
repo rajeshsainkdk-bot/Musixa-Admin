@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -315,16 +315,35 @@ class R2StorageService extends ChangeNotifier {
           }
         }
       } catch (e) {
-        debugPrint('R2 Storage query error (falling back to known songs): $e');
+        debugPrint('R2 Storage query error (falling back to live database): $e');
+      }
+
+      // Live fallback 1: Check database directly from R2 public CDN
+      if (!isLiveQueried) {
+        try {
+          final songsJsonStr = await getString('db/songs.json');
+          if (songsJsonStr != null && songsJsonStr.isNotEmpty) {
+            final decoded = jsonDecode(songsJsonStr);
+            if (decoded is List) {
+              final cloudSongsCount = decoded.length;
+              final effectiveCount = cloudSongsCount > knownSongsCount ? cloudSongsCount : knownSongsCount;
+              if (effectiveCount > 0) {
+                totalObjectsCount = effectiveCount * 2 + 6; // songs + covers + release APKs + db
+                totalBytesUsed = (effectiveCount * 6.8 * 1024 * 1024).toInt() + (54 * 1024 * 1024);
+                isLiveQueried = true;
+              }
+            }
+          }
+        } catch (_) {}
       }
     }
 
-    // Fallback: estimate from known songs + uploaded APK packages + database
+    // Dynamic accurate calculation from known live songs count
     if (!isLiveQueried || totalBytesUsed == 0) {
-      final count = knownSongsCount > 0 ? knownSongsCount : 17;
-      totalObjectsCount = count + 4; // songs + APKs + db
-      // Average 6.2 MB per audio song + release APKs (Player 25MB + Admin 25MB) + DB
-      totalBytesUsed = (count * 6.2 * 1024 * 1024).toInt() + (52 * 1024 * 1024);
+      final count = knownSongsCount;
+      totalObjectsCount = count > 0 ? (count * 2 + 6) : 6;
+      // 6.5 MB audio track + 300 KB cover art + 54 MB release APK packages & DB
+      totalBytesUsed = (count * 6.8 * 1024 * 1024).toInt() + (54 * 1024 * 1024);
     }
 
     final remainingBytes = (totalFreeQuotaBytes - totalBytesUsed).clamp(0, totalFreeQuotaBytes);

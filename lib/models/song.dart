@@ -1,4 +1,4 @@
-﻿import '../services/song_artwork_resolver.dart';
+import '../services/song_artwork_resolver.dart';
 
 class Song {
   final String id;

@@ -242,7 +242,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   }
 
   void _onUpdate() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+      _refreshStorageStats();
+    }
   }
 
   @override
@@ -1310,11 +1313,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
     final isConnected = r2.isConfigured;
 
     final stats = _storageStats;
-    final usedMb = (stats?['usedMb'] as num?)?.toDouble() ?? (17 * 6.2 + 52);
+    final totalSongs = _backend.approvedSongs.length;
+    final fallbackMb = (totalSongs * 6.8) + 54.0;
+    final usedMb = (stats?['usedMb'] as num?)?.toDouble() ?? fallbackMb;
     final usedGb = (stats?['usedGb'] as num?)?.toDouble() ?? (usedMb / 1024);
     final remainingGb = (stats?['remainingGb'] as num?)?.toDouble() ?? (10.0 - usedGb);
     final usedPercentage = (stats?['usedPercentage'] as num?)?.toDouble() ?? ((usedGb / 10.0) * 100);
-    final estimatedSongsRemaining = (stats?['estimatedSongsRemaining'] as num?)?.toInt() ?? 1600;
+    final estimatedSongsRemaining = (stats?['estimatedSongsRemaining'] as num?)?.toInt() ?? ((10.0 - usedGb) * 1024 / 6.8).floor();
 
     final progressColor = usedPercentage >= 90
         ? Colors.redAccent
@@ -1489,12 +1494,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
 
   void _showStorageDetailsDialog() {
     final stats = _storageStats;
-    final usedMb = (stats?['usedMb'] as num?)?.toDouble() ?? 157.0;
+    final totalSongs = _backend.approvedSongs.length;
+    final fallbackMb = (totalSongs * 6.8) + 54.0;
+    final usedMb = (stats?['usedMb'] as num?)?.toDouble() ?? fallbackMb;
     final usedGb = (stats?['usedGb'] as num?)?.toDouble() ?? (usedMb / 1024);
     final remainingGb = (stats?['remainingGb'] as num?)?.toDouble() ?? (10.0 - usedGb);
     final usedPercentage = (stats?['usedPercentage'] as num?)?.toDouble() ?? ((usedGb / 10.0) * 100);
-    final totalObjects = (stats?['totalObjects'] as num?)?.toInt() ?? _backend.approvedSongs.length;
-    final estimatedSongsRemaining = (stats?['estimatedSongsRemaining'] as num?)?.toInt() ?? 1600;
+    final totalObjects = (stats?['totalObjects'] as num?)?.toInt() ?? (_backend.approvedSongs.length * 2 + 6);
+    final estimatedSongsRemaining = (stats?['estimatedSongsRemaining'] as num?)?.toInt() ?? ((10.0 - usedGb) * 1024 / 6.8).floor();
 
     showDialog(
       context: context,

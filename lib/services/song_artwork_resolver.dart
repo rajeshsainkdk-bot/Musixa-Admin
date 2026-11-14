@@ -206,3 +206,4 @@ class SongArtworkResolver {
     return fallback;
   }
 }
+
