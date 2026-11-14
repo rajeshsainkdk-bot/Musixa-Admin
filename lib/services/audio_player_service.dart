@@ -30,6 +30,7 @@ class AudioPlayerService {
   Stream<Duration> get positionStream => _player.positionStream;
   Stream<Duration> get bufferedPositionStream => _player.bufferedPositionStream;
   Stream<Duration?> get durationStream => _player.durationStream;
+  Stream<int?> get currentIndexStream => _player.currentIndexStream;
 
   Song? get currentSong => _currentSong;
   List<Song> get queue => List.unmodifiable(_queue);
@@ -71,7 +72,7 @@ class AudioPlayerService {
       album: song.album,
       title: song.title,
       artist: song.artist,
-      artUri: song.coverUrl.startsWith('http') ? Uri.parse(song.coverUrl) : null,
+      artUri: song.displayCoverUrl.startsWith('http') ? Uri.parse(song.displayCoverUrl) : null,
     );
 
     // 1. Asset audio bundled in APK
@@ -95,25 +96,6 @@ class AudioPlayerService {
 
   Future<void> setQueue(List<Song> songs, {int initialIndex = 0}) async {
     final currentToken = ++_sessionToken;
-
-    // Check if the same queue is already active
-    final bool sameQueue = _queue.length == songs.length &&
-        _queue.isNotEmpty &&
-        songs.isNotEmpty &&
-        _queue.first.id == songs.first.id &&
-        _queue.last.id == songs.last.id;
-
-    if (sameQueue && _player.audioSource != null) {
-      _currentIndex = initialIndex.clamp(0, _queue.length - 1);
-      _currentSong = _queue[_currentIndex];
-      try {
-        await _player.seek(Duration.zero, index: _currentIndex);
-        if (currentToken == _sessionToken) {
-          await _player.play();
-        }
-        return;
-      } catch (_) {}
-    }
 
     _queue = List.from(songs);
     _currentIndex = initialIndex.clamp(0, _queue.isNotEmpty ? _queue.length - 1 : 0);
@@ -151,19 +133,7 @@ class AudioPlayerService {
     try {
       _currentSong = song;
 
-      // If the song is already part of the active queue, seek directly
       final idx = _queue.indexWhere((s) => s.id == song.id);
-      if (idx != -1 && _player.audioSource != null) {
-        _currentIndex = idx;
-        try {
-          await _player.seek(Duration.zero, index: idx);
-          if (currentToken == _sessionToken) {
-            await _player.play();
-          }
-          return;
-        } catch (_) {}
-      }
-
       if (idx != -1) {
         _currentIndex = idx;
       } else {
@@ -171,7 +141,7 @@ class AudioPlayerService {
         _currentIndex = _queue.length - 1;
       }
 
-      // Stop previous playback to ensure strictly ONE song plays
+      // Stop previous playback completely to ensure strictly ONE song plays
       await _player.stop();
       if (currentToken != _sessionToken) return;
 

@@ -9,6 +9,7 @@ import '../models/song.dart';
 import 'catalog_service.dart';
 import 'r2_storage_service.dart';
 import 'ai_artwork_service.dart';
+import 'song_artwork_resolver.dart';
 
 /// Central Cloud & Community Backend Service
 /// Handles User Registration with Phone OTP verification,
@@ -633,7 +634,11 @@ class CloudBackendService extends ChangeNotifier {
       streamUrl: audioPath,
       coverUrl: coverUrl?.trim().isNotEmpty == true
           ? coverUrl!.trim()
-          : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80',
+          : SongArtworkResolver.resolveArtwork(
+              title: title.trim(),
+              artist: artist.trim(),
+              genre: genre.trim().isEmpty ? 'Desi Chill' : genre.trim(),
+            ),
       genre: genre.trim().isEmpty ? 'Desi Chill' : genre.trim(),
       subCategory: subCategory?.trim(),
       status: 'pending', // Requires admin approval!
@@ -678,7 +683,11 @@ class CloudBackendService extends ChangeNotifier {
       streamUrl: audioPath.trim(),
       coverUrl: coverUrl?.trim().isNotEmpty == true
           ? coverUrl!.trim()
-          : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80',
+          : SongArtworkResolver.resolveArtwork(
+              title: title.trim(),
+              artist: artist.trim(),
+              genre: genre.trim().isEmpty ? 'Desi Chill' : genre.trim(),
+            ),
       genre: genre.trim().isEmpty ? 'Bollywood' : genre.trim(),
       subCategory: subCategory?.trim(),
       status: 'approved', // Live immediately!
@@ -1033,7 +1042,21 @@ class CloudBackendService extends ChangeNotifier {
       if (r2.isConfigured) {
         final cloudSongsJson = await r2.getString('db/songs.json');
         if (cloudSongsJson != null && cloudSongsJson.trim().isNotEmpty) {
-          if (_mergeSongsFromJson(cloudSongsJson)) hasChanges = true;
+          if (cloudSongsJson.trim() == '[]') {
+            if (_communitySongs.isNotEmpty) {
+              _communitySongs.clear();
+              hasChanges = true;
+            }
+          } else {
+            try {
+              final List<dynamic> rawList = jsonDecode(cloudSongsJson);
+              final cloudIds = rawList.map((e) => (e as Map)['id']?.toString() ?? '').toSet();
+              final beforeRemove = _communitySongs.length;
+              _communitySongs.removeWhere((s) => !cloudIds.contains(s.id));
+              if (_communitySongs.length != beforeRemove) hasChanges = true;
+            } catch (_) {}
+            if (_mergeSongsFromJson(cloudSongsJson)) hasChanges = true;
+          }
         }
       }
     } catch (e) {

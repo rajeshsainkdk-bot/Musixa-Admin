@@ -9,6 +9,7 @@ import '../services/catalog_service.dart';
 import '../services/storage_service.dart';
 import '../services/device_audio_service.dart';
 import '../services/cloud_backend_service.dart';
+import '../services/song_artwork_resolver.dart';
 
 class PlayerProvider extends ChangeNotifier {
   final AudioPlayerService _audioService = AudioPlayerService();
@@ -124,6 +125,10 @@ class PlayerProvider extends ChangeNotifier {
 
     _audioService.bufferedPositionStream.listen((buf) {
       _bufferedPosition = buf;
+      notifyListeners();
+    });
+
+    _audioService.currentIndexStream.listen((index) {
       notifyListeners();
     });
 
@@ -302,13 +307,42 @@ class PlayerProvider extends ChangeNotifier {
 
   // User Custom Playlists Management
   void createPlaylist(String title, [List<Song>? initialSongs]) {
+    final cleanTitle = title.trim();
+    if (cleanTitle.isEmpty) return;
+
+    // Prevent duplicate playlist names: if already exists, append new songs to it
+    final existingIdx = _customPlaylists.indexWhere(
+      (p) => p.title.trim().toLowerCase() == cleanTitle.toLowerCase(),
+    );
+
+    if (existingIdx != -1) {
+      if (initialSongs != null && initialSongs.isNotEmpty) {
+        final existing = _customPlaylists[existingIdx];
+        final existingIds = existing.songs.map((s) => s.id).toSet();
+        final newSongs = initialSongs.where((s) => !existingIds.contains(s.id)).toList();
+        if (newSongs.isNotEmpty) {
+          final updatedSongs = [...existing.songs, ...newSongs];
+          _customPlaylists[existingIdx] = existing.copyWith(
+            songs: updatedSongs,
+            coverUrl: existing.coverUrl.isNotEmpty ? existing.coverUrl : newSongs.first.displayCoverUrl,
+          );
+          _storageService.saveCustomPlaylists(
+            _customPlaylists,
+            CloudBackendService().currentUser?.phoneNumber,
+          );
+          notifyListeners();
+        }
+      }
+      return;
+    }
+
     final newPlaylist = Playlist(
       id: 'pl_${DateTime.now().millisecondsSinceEpoch}',
-      title: title.trim(),
+      title: cleanTitle,
       description: 'Created by you',
       coverUrl: initialSongs?.isNotEmpty == true
-          ? initialSongs!.first.coverUrl
-          : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80',
+          ? initialSongs!.first.displayCoverUrl
+          : SongArtworkResolver.resolveArtwork(title: cleanTitle, artist: 'Playlist'),
       songs: initialSongs ?? [],
     );
     _customPlaylists.insert(0, newPlaylist);

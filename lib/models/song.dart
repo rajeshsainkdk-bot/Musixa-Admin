@@ -1,4 +1,6 @@
-﻿class Song {
+﻿import '../services/song_artwork_resolver.dart';
+
+class Song {
   final String id;
   final String title;
   final String artist;
@@ -48,6 +50,23 @@
   }
 
   String get durationFormatted => formattedDuration;
+
+  String get displayCoverUrl {
+    final c = coverUrl.trim();
+    if (c.startsWith('http') &&
+        !c.contains('1511671782779') &&
+        !c.contains('1493225457124') &&
+        !c.contains('placeholder') &&
+        !c.contains('default_cover') &&
+        c != 'null') {
+      return c;
+    }
+    return SongArtworkResolver.resolveArtwork(
+      title: title,
+      artist: artist,
+      genre: genre,
+    );
+  }
 
   bool get isOffline =>
       streamUrl.startsWith('/') ||

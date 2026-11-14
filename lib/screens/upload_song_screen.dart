@@ -9,6 +9,7 @@ import '../services/r2_storage_service.dart';
 import '../services/language_service.dart';
 import '../services/background_upload_service.dart';
 import '../providers/player_provider.dart';
+import '../services/song_artwork_resolver.dart';
 
 class UploadSongScreen extends StatefulWidget {
   const UploadSongScreen({Key? key}) : super(key: key);
@@ -124,9 +125,15 @@ class _UploadSongScreenState extends State<UploadSongScreen> {
           _pickedFileSize = size;
           _errorMessage = null;
 
-          // Auto-fill smart clean title from filename if empty
+          // Auto-fill smart clean title and artist from filename if empty
           if (_titleCtrl.text.isEmpty) {
             _titleCtrl.text = CloudBackendService.formatSmartTitle(name);
+          }
+          if (_artistCtrl.text.isEmpty) {
+            final parsedArtist = SongArtworkResolver.extractArtist(name, fallback: '');
+            if (parsedArtist.isNotEmpty) {
+              _artistCtrl.text = parsedArtist;
+            }
           }
         });
       }
@@ -386,7 +393,7 @@ class _UploadSongScreenState extends State<UploadSongScreen> {
         try {
           final newSong = await _backend.submitUserSong(
             title: cleanName,
-            artist: defaultArtist,
+            artist: SongArtworkResolver.extractArtist(cleanName, fallback: defaultArtist),
             album: playlistTitle,
             genre: _selectedGenre,
             audioPath: finalAudioUrl,

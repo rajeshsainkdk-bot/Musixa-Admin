@@ -146,7 +146,7 @@ class NowPlayingScreen extends StatelessWidget {
 
                       // Center Vinyl / Album Art Disc
                       AlbumArtDisc(
-                        imageUrl: currentSong.coverUrl,
+                        imageUrl: currentSong.displayCoverUrl,
                         isPlaying: provider.isPlaying,
                         size: MediaQuery.of(context).size.width * 0.70,
                       ),

@@ -12,6 +12,7 @@ import '../../services/r2_storage_service.dart';
 import '../../services/update_service.dart';
 import '../../services/background_upload_service.dart';
 import '../../services/storage_service.dart';
+import '../../services/song_artwork_resolver.dart';
 import '../../models/song.dart';
 import '../../models/user_profile.dart';
 import '../../models/playlist.dart';
@@ -956,9 +957,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                           final targetCategory = prefillGenre ?? (h.category.isNotEmpty ? h.category : selectedGenre);
                           final targetSubCategory = prefillSubCategory ?? (h.subCategory ?? (subCategoryCtrl.text.trim().isNotEmpty ? subCategoryCtrl.text.trim() : null));
 
+                          final detectedSinger = SongArtworkResolver.extractArtist(smartTitle, fallback: 'Various Artists');
                           final newSong = await _backend.addAdminSong(
                             title: smartTitle,
-                            artist: 'Various Artists',
+                            artist: detectedSinger,
                             album: playlistTitleCtrl.text.trim().isNotEmpty ? playlistTitleCtrl.text.trim() : 'Musixa Cloud Hits',
                             genre: targetCategory,
                             subCategory: targetSubCategory,

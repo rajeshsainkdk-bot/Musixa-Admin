@@ -285,7 +285,7 @@ class SongThumbnailWidget extends StatelessWidget {
     final url = song.coverUrl.trim();
     final effectiveHttpUrl = (url.startsWith('http') && !isGenericMicUrl(url))
         ? url
-        : AiArtworkService().getAiCoverForSong(song);
+        : song.displayCoverUrl;
 
     if ((url.startsWith('/') || url.startsWith('file://')) && !isGenericMicUrl(url)) {
       final filePath = url.replaceFirst('file://', '');

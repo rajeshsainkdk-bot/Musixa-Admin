@@ -17,6 +17,24 @@ class Playlist {
     this.isCurated = false,
   });
 
+  Playlist copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? coverUrl,
+    List<Song>? songs,
+    bool? isCurated,
+  }) {
+    return Playlist(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      coverUrl: coverUrl ?? this.coverUrl,
+      songs: songs ?? this.songs,
+      isCurated: isCurated ?? this.isCurated,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
