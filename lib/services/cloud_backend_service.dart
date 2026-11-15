@@ -954,6 +954,9 @@ class CloudBackendService extends ChangeNotifier {
     }
   }
 
+  Future<void> syncWithCloud({bool force = false, bool forceNotify = false}) async =>
+      await syncSharedData();
+
   Future<bool> _loadSharedUsers() async {
     bool hasChanges = false;
     // 1. Local Shared Files

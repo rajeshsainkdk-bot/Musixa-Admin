@@ -1543,33 +1543,33 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 const SizedBox(width: 6),
                 IconButton(
                   icon: _isLoadingStorageStats
-                      ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00E5FF)))
-                      : const Icon(Icons.refresh_rounded, size: 18, color: Color(0xFF00E5FF)),
+                      ? const SizedBox(width: 13, height: 13, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00E5FF)))
+                      : const Icon(Icons.refresh_rounded, size: 16, color: Color(0xFF00E5FF)),
                   tooltip: _lang.isHindi ? 'स्टोरेज रिफ्रेश करें' : 'Refresh Storage',
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
                   onPressed: _refreshStorageStats,
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 3),
                 InkWell(
                   onTap: _showR2SettingsDialog,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(6),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3.5),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E293B),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.35)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-                        Icon(Icons.settings_rounded, size: 13, color: Color(0xFF00E5FF)),
-                        SizedBox(width: 4),
+                        Icon(Icons.settings_rounded, size: 12, color: Color(0xFF00E5FF)),
+                        SizedBox(width: 3),
                         Text(
                           'Settings',
-                          style: TextStyle(color: Color(0xFF00E5FF), fontSize: 10, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Color(0xFF00E5FF), fontSize: 9.5, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
