@@ -1170,9 +1170,10 @@ class CloudBackendService extends ChangeNotifier {
     final beforeSongClean = _communitySongs.length;
     _communitySongs.removeWhere((s) =>
         s.streamUrl.contains('msixa-music') ||
+        s.streamUrl.contains('pub-d4f2e58dc2594d0c8dc1f30bbae4344f') ||
         s.id.startsWith('msixa_') ||
-        s.uploadedBy.toLowerCase().contains('msixa') ||
-        s.uploaderName.toLowerCase().contains('msixa'));
+        (s.uploadedBy?.toLowerCase().contains('msixa') ?? false) ||
+        (s.uploaderName?.toLowerCase().contains('msixa') ?? false));
     if (_communitySongs.length != beforeSongClean) {
       hasChanges = true;
     }
