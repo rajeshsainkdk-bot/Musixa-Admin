@@ -26,14 +26,12 @@ class CloudBackendService extends ChangeNotifier {
   static const String _keyCatalogSeeded = 'musixa_catalog_seeded_v1';
   static const String _adminPin = '7777'; // Default Admin Master Key
 
-  // Shared file paths across Musixa User App and Musixa Admin App
+  // Shared file paths across Musixa User App and Musixa Admin App (Internal app storage only)
   static final List<String> _sharedUserFilePaths = [
     '/data/data/com.musixa.player/files/musixa_shared_users.json',
     '/data/data/com.musixa.admin/files/musixa_shared_users.json',
     '/data/user/0/com.musixa.player/files/musixa_shared_users.json',
     '/data/user/0/com.musixa.admin/files/musixa_shared_users.json',
-    '/storage/emulated/0/Download/musixa_shared_users.json',
-    '/sdcard/Download/musixa_shared_users.json',
   ];
 
   static final List<String> _sharedSongFilePaths = [
@@ -41,8 +39,6 @@ class CloudBackendService extends ChangeNotifier {
     '/data/data/com.musixa.admin/files/musixa_shared_songs.json',
     '/data/user/0/com.musixa.player/files/musixa_shared_songs.json',
     '/data/user/0/com.musixa.admin/files/musixa_shared_songs.json',
-    '/storage/emulated/0/Download/musixa_shared_songs.json',
-    '/sdcard/Download/musixa_shared_songs.json',
   ];
 
   static final List<String> _sharedDeletedSongFilePaths = [
@@ -50,8 +46,6 @@ class CloudBackendService extends ChangeNotifier {
     '/data/data/com.musixa.admin/files/musixa_deleted_songs.json',
     '/data/user/0/com.musixa.player/files/musixa_deleted_songs.json',
     '/data/user/0/com.musixa.admin/files/musixa_deleted_songs.json',
-    '/storage/emulated/0/Download/musixa_deleted_songs.json',
-    '/sdcard/Download/musixa_deleted_songs.json',
   ];
 
   UserProfile? _currentUser;
@@ -106,19 +100,26 @@ class CloudBackendService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
 
     // Ensure clean state: purge any legacy cached Msixa songs or users
-    const purgeMigrationKey = 'musixa_isolated_clean_v6';
+    const purgeMigrationKey = 'musixa_isolated_clean_v12_hard_reset';
     if (!prefs.containsKey(purgeMigrationKey)) {
       await prefs.remove(_keyCommunitySongs);
       await prefs.remove(_keyAllUsers);
       await prefs.remove(_keyDeletedSongIds);
       await prefs.remove(_keyCatalogSeeded);
-      for (final p in _sharedUserFilePaths) {
-        try { final f = File(p); if (f.existsSync()) f.deleteSync(); } catch (_) {}
-      }
-      for (final p in _sharedSongFilePaths) {
-        try { final f = File(p); if (f.existsSync()) f.deleteSync(); } catch (_) {}
-      }
-      for (final p in _sharedDeletedSongFilePaths) {
+      _communitySongs.clear();
+      _allUsers.clear();
+      _deletedSongIds.clear();
+      for (final p in [
+        ..._sharedUserFilePaths,
+        ..._sharedSongFilePaths,
+        ..._sharedDeletedSongFilePaths,
+        '/storage/emulated/0/Download/musixa_shared_users.json',
+        '/storage/emulated/0/Download/musixa_shared_songs.json',
+        '/storage/emulated/0/Download/musixa_deleted_songs.json',
+        '/sdcard/Download/musixa_shared_users.json',
+        '/sdcard/Download/musixa_shared_songs.json',
+        '/sdcard/Download/musixa_deleted_songs.json',
+      ]) {
         try { final f = File(p); if (f.existsSync()) f.deleteSync(); } catch (_) {}
       }
       await prefs.setBool(purgeMigrationKey, true);
@@ -970,13 +971,26 @@ class CloudBackendService extends ChangeNotifier {
       }
     }
 
-    // 2. Cloudflare R2 Remote Cloud Database (Live cache-busted)
+    // 2. Cloudflare R2 Remote Cloud Database (Live cache-busted authoritative)
     try {
       final r2 = R2StorageService();
       if (r2.isConfigured) {
         final cloudUsersJson = await r2.getString('db/users.json');
         if (cloudUsersJson != null && cloudUsersJson.trim().isNotEmpty) {
-          if (_mergeUsersFromJson(cloudUsersJson)) hasChanges = true;
+          try {
+            final List<dynamic> list = jsonDecode(cloudUsersJson);
+            final List<UserProfile> cloudUsers = [];
+            for (final item in list) {
+              try {
+                cloudUsers.add(UserProfile.fromJson(item));
+              } catch (_) {}
+            }
+            if (cloudUsers.isNotEmpty) {
+              _allUsers.clear();
+              _allUsers.addAll(cloudUsers);
+              hasChanges = true;
+            }
+          } catch (_) {}
         }
       }
     } catch (e) {
@@ -988,7 +1002,13 @@ class CloudBackendService extends ChangeNotifier {
     _allUsers.removeWhere((u) =>
         u.email.toLowerCase().endsWith('@msixa.com') ||
         u.fullName.toLowerCase().contains('msixa') ||
-        u.uid.startsWith('msixa_'));
+        u.uid.startsWith('msixa_') ||
+        u.email.toLowerCase() == 'supertenchical@gmail.com' ||
+        u.email.toLowerCase() == 'rahul2528babu@gmail.com' ||
+        u.email.toLowerCase() == 'gs304502@gmail.com' ||
+        u.email.toLowerCase() == 'anmolgoswamichandsen@gmail.com' ||
+        u.uid.startsWith('user_17941') ||
+        u.uid.startsWith('user_17942'));
     if (_allUsers.length != beforeClean) {
       hasChanges = true;
     }
@@ -1115,7 +1135,7 @@ class CloudBackendService extends ChangeNotifier {
       }
     }
 
-    // 2. Cloudflare R2 Remote Cloud Database
+    // 2. Cloudflare R2 Remote Cloud Database (Authoritative for Musixa)
     try {
       final r2 = R2StorageService();
       if (r2.isConfigured) {
@@ -1129,17 +1149,32 @@ class CloudBackendService extends ChangeNotifier {
           } else {
             try {
               final List<dynamic> rawList = jsonDecode(cloudSongsJson);
-              final cloudIds = rawList.map((e) => (e as Map)['id']?.toString() ?? '').toSet();
-              final beforeRemove = _communitySongs.length;
-              _communitySongs.removeWhere((s) => !cloudIds.contains(s.id));
-              if (_communitySongs.length != beforeRemove) hasChanges = true;
+              final List<Song> cloudSongList = [];
+              for (final item in rawList) {
+                try {
+                  cloudSongList.add(Song.fromJson(item));
+                } catch (_) {}
+              }
+              _communitySongs.clear();
+              _communitySongs.addAll(cloudSongList);
+              hasChanges = true;
             } catch (_) {}
-            if (_mergeSongsFromJson(cloudSongsJson)) hasChanges = true;
           }
         }
       }
     } catch (e) {
       debugPrint('Reading shared songs from R2: $e');
+    }
+
+    // Strictly purge any legacy Msixa songs that leaked previously
+    final beforeSongClean = _communitySongs.length;
+    _communitySongs.removeWhere((s) =>
+        s.streamUrl.contains('msixa-music') ||
+        s.id.startsWith('msixa_') ||
+        s.uploadedBy.toLowerCase().contains('msixa') ||
+        s.uploaderName.toLowerCase().contains('msixa'));
+    if (_communitySongs.length != beforeSongClean) {
+      hasChanges = true;
     }
 
     if (hasChanges) {

@@ -1365,22 +1365,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Cloudflare R2 Storage (10 GB Free)',
-                            style: GoogleFonts.syne(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                          Flexible(
+                            child: Text(
+                              'Cloudflare R2 Storage',
+                              style: GoogleFonts.syne(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                             decoration: BoxDecoration(
                               color: isConnected ? progressColor.withOpacity(0.2) : Colors.amber.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              isConnected ? '${usedPercentage.toStringAsFixed(1)}% Used' : '⚠️ Setup',
+                              isConnected ? '${usedPercentage.toStringAsFixed(1)}%' : 'Setup',
                               style: TextStyle(
                                 color: isConnected ? progressColor : Colors.amberAccent,
                                 fontSize: 9,
@@ -1392,7 +1398,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Bucket: ${r2.bucketName ?? "musixa-music"} • CDN Live Edge',
+                        'Bucket: ${r2.bucketName ?? "musixa-music"} • CDN Live',
                         style: const TextStyle(color: Colors.white60, fontSize: 10),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -1400,7 +1406,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     ],
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 4),
                 IconButton(
                   icon: _isLoadingStorageStats
                       ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00E5FF)))
@@ -1408,7 +1414,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   tooltip: _lang.isHindi ? 'स्टोरेज रिफ्रेश करें' : 'Refresh Storage',
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                   onPressed: _refreshStorageStats,
                 ),
                 const SizedBox(width: 4),
@@ -1416,7 +1422,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   onTap: _showR2SettingsDialog,
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(8),
