@@ -34,24 +34,6 @@ class SongThumbnailWidget extends StatelessWidget {
     return SongArtworkResolver.getThemeForTitle('', genre: genre).icon;
   }
 
-  static IconData getIconForGenre(String genre) {
-    final g = genre.toLowerCase();
-    if (g.contains('bhakti') || g.contains('ram') || g.contains('shyam') || g.contains('spiritual')) {
-      return Icons.flare_rounded;
-    } else if (g.contains('dj') || g.contains('remix')) {
-      return Icons.speaker_group_rounded;
-    } else if (g.contains('rajasthan')) {
-      return Icons.wb_sunny_rounded;
-    } else if (g.contains('lo-fi')) {
-      return Icons.nightlight_round;
-    } else if (g.contains('bollywood')) {
-      return Icons.movie_filter_rounded;
-    } else if (g.contains('punjabi') || g.contains('sufi')) {
-      return Icons.audiotrack_rounded;
-    }
-    return Icons.album_rounded;
-  }
-
   /// Professional, Studio-Grade AI Album Cover Template
   Widget _buildProceduralArt(BuildContext context) {
     final gradient = getGradientForSong(song);
