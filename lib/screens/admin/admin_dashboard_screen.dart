@@ -2555,7 +2555,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          _adminGroupByCategory ? '📁 कैटेगरी व्यू' : '🎵 फ्लैट लिस्ट',
+                          _adminGroupByCategory
+                              ? (_lang.isHindi ? '📁 कैटेगरी व्यू' : '📁 Category View')
+                              : (_lang.isHindi ? '🎵 फ्लैट लिस्ट' : '🎵 Flat List'),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -2599,7 +2601,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     elevation: 0,
                   ),
                   icon: const Icon(Icons.drive_folder_upload_rounded, size: 16),
-                  label: const Text('बल्क / फ़ोल्डर अपलोड', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                  label: Text(_lang.isHindi ? 'बल्क / फ़ोल्डर अपलोड' : 'Bulk / Folder Upload', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                   onPressed: () => _showBulkUploadDialog(),
                 ),
                 const SizedBox(width: 8),
@@ -2874,7 +2876,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       onPressed: () => _toggleFolderSelection(catSongs),
                     ),
                   PopupMenuButton<String>(
-                    tooltip: 'श्रेणी / फ़ोल्डर विकल्प',
+                    tooltip: _lang.isHindi ? 'श्रेणी / फ़ोल्डर विकल्प' : 'Folder Options',
                     icon: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
@@ -2884,12 +2886,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(Icons.more_vert_rounded, color: Color(0xFFFFB300), size: 14),
-                          SizedBox(width: 2),
+                        children: [
+                          const Icon(Icons.more_vert_rounded, color: Color(0xFFFFB300), size: 14),
+                          const SizedBox(width: 2),
                           Text(
-                            'विकल्प',
-                            style: TextStyle(color: Color(0xFFFFB300), fontSize: 10, fontWeight: FontWeight.bold),
+                            _lang.isHindi ? 'विकल्प' : 'Options',
+                            style: const TextStyle(color: Color(0xFFFFB300), fontSize: 10, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -2910,20 +2912,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       PopupMenuItem(
                         value: 'single',
                         child: Row(
-                          children: const [
-                            Icon(Icons.music_note_rounded, color: Color(0xFFFFB300), size: 16),
-                            SizedBox(width: 8),
-                            Text('+ एकल गाना जोड़ें', style: TextStyle(color: Colors.white, fontSize: 12)),
+                          children: [
+                            const Icon(Icons.music_note_rounded, color: Color(0xFFFFB300), size: 16),
+                            const SizedBox(width: 8),
+                            Text(_lang.isHindi ? '+ एकल गाना जोड़ें' : '+ Add Single Track', style: const TextStyle(color: Colors.white, fontSize: 12)),
                           ],
                         ),
                       ),
                       PopupMenuItem(
                         value: 'bulk',
                         child: Row(
-                          children: const [
-                            Icon(Icons.drive_folder_upload_rounded, color: Color(0xFF00E5FF), size: 16),
-                            SizedBox(width: 8),
-                            Text('📁 बल्क / फ़ोल्डर अपलोड', style: TextStyle(color: Colors.white, fontSize: 12)),
+                          children: [
+                            const Icon(Icons.drive_folder_upload_rounded, color: Color(0xFF00E5FF), size: 16),
+                            const SizedBox(width: 8),
+                            Text(_lang.isHindi ? '📁 बल्क / फ़ोल्डर अपलोड' : '📁 Bulk / Folder Upload', style: const TextStyle(color: Colors.white, fontSize: 12)),
                           ],
                         ),
                       ),
@@ -2942,8 +2944,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                             const SizedBox(width: 8),
                             Text(
                               catSongs.isNotEmpty && catSongs.every((s) => _selectedSongIds.contains(s.id))
-                                  ? 'श्रेणी अन-सेलेक्ट करें'
-                                  : 'पूरी श्रेणी चुनें (Multi-Select)',
+                                  ? (_lang.isHindi ? 'श्रेणी अन-सेलेक्ट करें' : 'Deselect Category')
+                                  : (_lang.isHindi ? 'पूरी श्रेणी चुनें (Multi-Select)' : 'Select Entire Category'),
                               style: const TextStyle(color: Colors.white, fontSize: 12),
                             ),
                           ],
@@ -2952,10 +2954,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       PopupMenuItem(
                         value: 'delete_category',
                         child: Row(
-                          children: const [
-                            Icon(Icons.delete_forever_rounded, color: Color(0xFFEF4444), size: 16),
-                            SizedBox(width: 8),
-                            Text('🗑️ पूरी श्रेणी/फ़ोल्डर हटाएं', style: TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold)),
+                          children: [
+                            const Icon(Icons.delete_forever_rounded, color: Color(0xFFEF4444), size: 16),
+                            const SizedBox(width: 8),
+                            Text(_lang.isHindi ? '🗑️ पूरी श्रेणी/फ़ोल्डर हटाएं' : '🗑️ Delete Entire Folder', style: const TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -3016,11 +3018,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                     color: const Color(0xFF818CF8),
                                     size: 18,
                                   ),
-                                  tooltip: 'सब-फ़ोल्डर चुनें/हटाएं',
+                                  tooltip: _lang.isHindi ? 'सब-फ़ोल्डर चुनें/हटाएं' : 'Select Sub-folder',
                                   onPressed: () => _toggleFolderSelection(subSongs),
                                 ),
                               PopupMenuButton<String>(
-                                tooltip: 'इस सब-कैटेगरी में विकल्प',
+                                tooltip: _lang.isHindi ? 'इस सब-कैटेगरी में विकल्प' : 'Sub-folder Options',
                                 icon: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                   decoration: BoxDecoration(
@@ -3030,12 +3032,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
-                                    children: const [
-                                      Icon(Icons.more_vert_rounded, color: Color(0xFF00E5FF), size: 12),
-                                      SizedBox(width: 2),
+                                    children: [
+                                      const Icon(Icons.more_vert_rounded, color: Color(0xFF00E5FF), size: 12),
+                                      const SizedBox(width: 2),
                                       Text(
-                                        'विकल्प',
-                                        style: TextStyle(color: Color(0xFF00E5FF), fontSize: 9, fontWeight: FontWeight.bold),
+                                        _lang.isHindi ? 'विकल्प' : 'Options',
+                                        style: const TextStyle(color: Color(0xFF00E5FF), fontSize: 9, fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   ),
@@ -3056,20 +3058,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                   PopupMenuItem(
                                     value: 'single',
                                     child: Row(
-                                      children: const [
-                                        Icon(Icons.music_note_rounded, color: Color(0xFFFFB300), size: 14),
-                                        SizedBox(width: 6),
-                                        Text('+ एकल गाना जोड़ें', style: TextStyle(color: Colors.white, fontSize: 11)),
+                                      children: [
+                                        const Icon(Icons.music_note_rounded, color: Color(0xFFFFB300), size: 14),
+                                        const SizedBox(width: 6),
+                                        Text(_lang.isHindi ? '+ एकल गाना जोड़ें' : '+ Add Single Track', style: const TextStyle(color: Colors.white, fontSize: 11)),
                                       ],
                                     ),
                                   ),
                                   PopupMenuItem(
                                     value: 'bulk',
                                     child: Row(
-                                      children: const [
-                                        Icon(Icons.drive_folder_upload_rounded, color: Color(0xFF00E5FF), size: 14),
-                                        SizedBox(width: 6),
-                                        Text('📁 बल्क अपलोड', style: TextStyle(color: Colors.white, fontSize: 11)),
+                                      children: [
+                                        const Icon(Icons.drive_folder_upload_rounded, color: Color(0xFF00E5FF), size: 14),
+                                        const SizedBox(width: 6),
+                                        Text(_lang.isHindi ? '📁 बल्क अपलोड' : '📁 Bulk Upload', style: const TextStyle(color: Colors.white, fontSize: 11)),
                                       ],
                                     ),
                                   ),
@@ -3088,8 +3090,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                         const SizedBox(width: 6),
                                         Text(
                                           subSongs.isNotEmpty && subSongs.every((s) => _selectedSongIds.contains(s.id))
-                                              ? 'अन-सेलेक्ट करें'
-                                              : 'सब-फ़ोल्डर चुनें',
+                                              ? (_lang.isHindi ? 'अन-सेलेक्ट करें' : 'Deselect')
+                                              : (_lang.isHindi ? 'सब-फ़ोल्डर चुनें' : 'Select Sub-folder'),
                                           style: const TextStyle(color: Colors.white, fontSize: 11),
                                         ),
                                       ],
@@ -3098,10 +3100,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                                   PopupMenuItem(
                                     value: 'delete_subcategory',
                                     child: Row(
-                                      children: const [
-                                        Icon(Icons.delete_forever_rounded, color: Color(0xFFEF4444), size: 14),
-                                        SizedBox(width: 6),
-                                        Text('🗑️ यह सब-फ़ोल्डर हटाएं', style: TextStyle(color: Color(0xFFEF4444), fontSize: 11, fontWeight: FontWeight.bold)),
+                                      children: [
+                                        const Icon(Icons.delete_forever_rounded, color: Color(0xFFEF4444), size: 14),
+                                        const SizedBox(width: 6),
+                                        Text(_lang.isHindi ? '🗑️ यह सब-फ़ोल्डर हटाएं' : '🗑️ Delete Sub-folder', style: const TextStyle(color: Color(0xFFEF4444), fontSize: 11, fontWeight: FontWeight.bold)),
                                       ],
                                     ),
                                   ),
