@@ -282,26 +282,26 @@ jobs:
               print(f"Uploading {admin_apk} ({size_mb} MB) to R2 update/musixa_admin_latest.apk...")
               s3.upload_file(
                   admin_apk,
-                  'msixa-music',
+                  'musixa-music',
                   'update/musixa_admin_latest.apk',
                   ExtraArgs={'ContentType': 'application/vnd.android.package-archive'}
               )
               admin_manifest = {
                   'version_code': run_num,
                   'version_name': f"1.0.{run_num}",
-                  'apk_url': 'https://pub-d4f2e58dc2594d0c8dc1f30bbae4344f.r2.dev/update/musixa_admin_latest.apk',
+                  'apk_url': 'https://25622df2e6919b63cf30e7d06532d778.r2.cloudflarestorage.com/musixa-music/update/musixa_admin_latest.apk',
                   'file_size_mb': size_mb,
                   'release_notes': "Musixa Admin Pro: Real-time Cloudflare R2 song manager, user sync, video catalog & analytics!",
                   'force_update': False
               }
               s3.put_object(
-                  Bucket='msixa-music',
+                  Bucket='musixa-music',
                   Key='update/musixa_admin_version.json',
                   Body=json.dumps(admin_manifest),
                   ContentType='application/json'
               )
               s3.put_object(
-                  Bucket='msixa-music',
+                  Bucket='musixa-music',
                   Key='update/admin_version.json',
                   Body=json.dumps(admin_manifest),
                   ContentType='application/json'

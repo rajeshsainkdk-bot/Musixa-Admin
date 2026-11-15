@@ -961,6 +961,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                           final targetSubCategory = prefillSubCategory ?? (h.subCategory ?? (subCategoryCtrl.text.trim().isNotEmpty ? subCategoryCtrl.text.trim() : null));
 
                           final detectedSinger = SongArtworkResolver.extractArtist(smartTitle, fallback: 'Various Artists');
+                          final autoCover = SongArtworkResolver.resolveArtwork(
+                            title: smartTitle,
+                            artist: detectedSinger,
+                            genre: targetCategory,
+                          );
                           final newSong = await _backend.addAdminSong(
                             title: smartTitle,
                             artist: detectedSinger,
@@ -968,6 +973,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                             genre: targetCategory,
                             subCategory: targetSubCategory,
                             audioPath: cloudUrl,
+                            coverUrl: autoCover,
                           );
                           uploadedSongsList.add(newSong);
                           successCount++;

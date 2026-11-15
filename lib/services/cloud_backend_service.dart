@@ -105,6 +105,16 @@ class CloudBackendService extends ChangeNotifier {
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
 
+    // Ensure clean state: purge any legacy cached Msixa songs
+    const purgeMigrationKey = 'musixa_isolated_clean_v5';
+    if (!prefs.containsKey(purgeMigrationKey)) {
+      await prefs.remove(_keyCommunitySongs);
+      await prefs.remove(_keyAllUsers);
+      await prefs.remove(_keyDeletedSongIds);
+      await prefs.remove(_keyCatalogSeeded);
+      await prefs.setBool(purgeMigrationKey, true);
+    }
+
     // 1. Load Current Logged-in User
     final userJson = prefs.getString(_keyCurrentUser);
     if (userJson != null) {
