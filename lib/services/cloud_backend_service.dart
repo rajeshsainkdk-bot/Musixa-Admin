@@ -105,13 +105,22 @@ class CloudBackendService extends ChangeNotifier {
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Ensure clean state: purge any legacy cached Msixa songs
-    const purgeMigrationKey = 'musixa_isolated_clean_v5';
+    // Ensure clean state: purge any legacy cached Msixa songs or users
+    const purgeMigrationKey = 'musixa_isolated_clean_v6';
     if (!prefs.containsKey(purgeMigrationKey)) {
       await prefs.remove(_keyCommunitySongs);
       await prefs.remove(_keyAllUsers);
       await prefs.remove(_keyDeletedSongIds);
       await prefs.remove(_keyCatalogSeeded);
+      for (final p in _sharedUserFilePaths) {
+        try { final f = File(p); if (f.existsSync()) f.deleteSync(); } catch (_) {}
+      }
+      for (final p in _sharedSongFilePaths) {
+        try { final f = File(p); if (f.existsSync()) f.deleteSync(); } catch (_) {}
+      }
+      for (final p in _sharedDeletedSongFilePaths) {
+        try { final f = File(p); if (f.existsSync()) f.deleteSync(); } catch (_) {}
+      }
       await prefs.setBool(purgeMigrationKey, true);
     }
 
@@ -796,6 +805,18 @@ class CloudBackendService extends ChangeNotifier {
     for (final s in CatalogService.getCuratedSongs()) {
       _deletedSongIds.add(s.id);
     }
+    // Hard-tombstone all legacy cross-synced songs
+    const legacyIds = [
+      'msixa_bhakti_01', 'msixa_bhakti_02', 'msixa_bhakti_03', 'msixa_bhakti_04', 'msixa_bhakti_05',
+      'msixa_bhakti_06', 'msixa_bhakti_07', 'msixa_bhakti_08', 'msixa_bhakti_09',
+      'msixa_punjabi_01', 'msixa_punjabi_02', 'msixa_punjabi_03', 'msixa_punjabi_04', 'msixa_punjabi_05', 'msixa_punjabi_06',
+      'msixa_indie_01', 'msixa_indie_02',
+      'Musixa_bhakti_01', 'Musixa_bhakti_02', 'Musixa_bhakti_03', 'Musixa_bhakti_04', 'Musixa_bhakti_05',
+      'Musixa_bhakti_06', 'Musixa_bhakti_07', 'Musixa_bhakti_08', 'Musixa_bhakti_09',
+      'Musixa_punjabi_01', 'Musixa_punjabi_02', 'Musixa_punjabi_03', 'Musixa_punjabi_04', 'Musixa_punjabi_05', 'Musixa_punjabi_06',
+      'Musixa_indie_01', 'Musixa_indie_02'
+    ];
+    _deletedSongIds.addAll(legacyIds);
     _communitySongs.clear();
     await _persistDeletedSongs();
     await _persistSongs();
@@ -949,6 +970,34 @@ class CloudBackendService extends ChangeNotifier {
       debugPrint('Reading shared users from R2: $e');
     }
 
+    // Strictly purge any legacy Msixa users that leaked previously
+    final beforeClean = _allUsers.length;
+    _allUsers.removeWhere((u) =>
+        u.email.toLowerCase().endsWith('@msixa.com') ||
+        u.fullName.toLowerCase().contains('msixa') ||
+        u.uid.startsWith('msixa_'));
+    if (_allUsers.length != beforeClean) {
+      hasChanges = true;
+    }
+
+    // Default Seed Admin user if empty
+    if (!_allUsers.any((u) => u.role == 'admin')) {
+      final defaultAdmin = UserProfile(
+        uid: 'musixa_admin_master_01',
+        fullName: 'Musixa Super Admin',
+        email: 'admin@musixa.com',
+        isEmailVerified: true,
+        phoneNumber: '+919999999999',
+        isPhoneVerified: true,
+        role: 'admin',
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
+        lastActiveAt: DateTime.now(),
+        isOnline: true,
+      );
+      _allUsers.add(defaultAdmin);
+      hasChanges = true;
+    }
+
     if (hasChanges) {
       try {
         final prefs = await SharedPreferences.getInstance();
@@ -966,6 +1015,12 @@ class CloudBackendService extends ChangeNotifier {
       for (final item in jsonList) {
         try {
           final user = UserProfile.fromJson(item as Map<String, dynamic>);
+          // Strictly reject any Msixa platform users
+          if (user.email.toLowerCase().endsWith('@msixa.com') ||
+              user.fullName.toLowerCase().contains('msixa') ||
+              user.uid.startsWith('msixa_')) {
+            continue;
+          }
           final digitsOnly = user.phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
           final last10 = digitsOnly.length >= 10 ? digitsOnly.substring(digitsOnly.length - 10) : digitsOnly;
           final idx = _allUsers.indexWhere((u) {

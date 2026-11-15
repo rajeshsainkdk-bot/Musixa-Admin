@@ -53,7 +53,7 @@ class R2StorageService extends ChangeNotifier {
       _secretAccessKey!.trim().isNotEmpty;
 
   String? get accountId => _accountId;
-  String? get bucketName => _bucketName;
+  String? get bucketName => defaultBucketName; // Musixa is permanently hard-locked to musixa-music
   String? get accessKeyId => _accessKeyId;
   String? get secretAccessKey => _secretAccessKey;
   String? get publicDomain => _publicDomain;
@@ -101,10 +101,7 @@ class R2StorageService extends ChangeNotifier {
     try {
       final map = jsonDecode(rawJson) as Map<String, dynamic>;
       _accountId = map['accountId']?.toString().trim();
-      _bucketName = map['bucketName']?.toString().trim();
-      if (_bucketName == null || _bucketName == 'msixa-music' || _bucketName!.trim().isEmpty) {
-        _bucketName = defaultBucketName;
-      }
+      _bucketName = defaultBucketName; // Musixa is permanently hard-locked to musixa-music
       _accessKeyId = map['accessKeyId']?.toString().trim();
       _secretAccessKey = map['secretAccessKey']?.toString().trim();
       _publicDomain = map['publicDomain']?.toString().trim();
@@ -122,7 +119,7 @@ class R2StorageService extends ChangeNotifier {
     required String publicDomain,
   }) async {
     _accountId = accountId.trim();
-    _bucketName = bucketName.trim();
+    _bucketName = defaultBucketName; // Musixa is permanently hard-locked to musixa-music
     _accessKeyId = accessKeyId.trim();
     _secretAccessKey = secretAccessKey.trim();
 
