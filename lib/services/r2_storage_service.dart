@@ -531,7 +531,7 @@ class R2StorageService extends ChangeNotifier {
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
-        debugPrint('âœ… Cloudflare R2 Authenticated GET Success [$objectKey]');
+        debugPrint('✅ Cloudflare R2 Authenticated GET Success [$objectKey]');
         return utf8.decode(response.bodyBytes);
       }
     } catch (e) {
@@ -690,14 +690,14 @@ class R2StorageService extends ChangeNotifier {
       ).timeout(const Duration(seconds: 20));
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        debugPrint('âœ… Cloudflare R2 PUT Success [$objectKey] (HTTP ${response.statusCode})');
+        debugPrint('✅ Cloudflare R2 PUT Success [$objectKey] (HTTP ${response.statusCode})');
         return true;
       } else {
-        debugPrint('âŒ Cloudflare R2 PUT failed (${response.statusCode}): ${response.body}');
+        debugPrint('❌ Cloudflare R2 PUT failed (${response.statusCode}): ${response.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('âŒ Cloudflare R2 PUT exception [$objectKey]: $e');
+      debugPrint('❌ Cloudflare R2 PUT exception [$objectKey]: $e');
       return false;
     }
   }

@@ -23,9 +23,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      UpdateService.checkForUpdate(context, autoPrompt: true);
-    });
   }
 
   final List<Widget> _screens = const [

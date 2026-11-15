@@ -37,8 +37,7 @@ class UpdateService {
 
   /// Check for latest update from Cloudflare R2
   static Future<void> checkForUpdate(BuildContext context, {bool autoPrompt = false, bool isAdmin = false}) async {
-    if (autoPrompt && _hasCheckedThisSession) return;
-    if (autoPrompt) _hasCheckedThisSession = true;
+    if (autoPrompt) return; // Disable automatic popups on startup
 
     // 1. Show immediate progress feedback for manual button click
     if (!autoPrompt && context.mounted) {
