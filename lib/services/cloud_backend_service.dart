@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/user_profile.dart';
 import '../models/song.dart';
+import '../models/playlist.dart';
 import 'catalog_service.dart';
 import 'r2_storage_service.dart';
 import 'ai_artwork_service.dart';
@@ -52,6 +53,9 @@ class CloudBackendService extends ChangeNotifier {
   final List<UserProfile> _allUsers = [];
   final List<Song> _communitySongs = [];
   final Set<String> _deletedSongIds = {};
+  final List<Playlist> _sharedPlaylists = [];
+
+  List<Playlist> get cloudPlaylists => List.unmodifiable(_sharedPlaylists);
 
   // Temporary Verification State
   String? _generatedPhoneOtp;
@@ -956,6 +960,16 @@ class CloudBackendService extends ChangeNotifier {
 
   Future<void> syncWithCloud({bool force = false, bool forceNotify = false}) async =>
       await syncSharedData();
+
+  Future<void> addCloudPlaylist(Playlist playlist) async {
+    final idx = _sharedPlaylists.indexWhere((p) => p.id == playlist.id || p.title.toLowerCase() == playlist.title.toLowerCase());
+    if (idx != -1) {
+      _sharedPlaylists[idx] = playlist;
+    } else {
+      _sharedPlaylists.insert(0, playlist);
+    }
+    notifyListeners();
+  }
 
   Future<bool> _loadSharedUsers() async {
     bool hasChanges = false;

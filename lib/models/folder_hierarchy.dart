@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:file_picker/file_picker.dart';
 
 class DetectedFolderHierarchy {
   final String category;
@@ -76,6 +78,50 @@ class DetectedFolderHierarchy {
       debugPrint('SAF resolve error: $e');
     }
     return pathOrUri;
+  }
+
+  /// BFS queue-based safe recursive directory scanner that traverses all subfolders
+  static Future<List<PlatformFile>> scanAudioFilesFromDirectory(String pathOrUri) async {
+    final rawPath = resolveSafPath(pathOrUri);
+    final rootDir = Directory(rawPath);
+    if (!rootDir.existsSync()) {
+      return [];
+    }
+
+    final List<PlatformFile> found = [];
+    final List<Directory> queue = [rootDir];
+    final Set<String> visited = {};
+    const audioExts = {'mp3', 'm4a', 'wav', 'aac', 'flac', 'ogg'};
+
+    while (queue.isNotEmpty) {
+      final current = queue.removeAt(0);
+      if (visited.contains(current.path)) continue;
+      visited.add(current.path);
+
+      try {
+        final entries = current.listSync(followLinks: false);
+        for (final e in entries) {
+          if (e is File) {
+            final ext = e.path.split('.').last.toLowerCase();
+            if (audioExts.contains(ext)) {
+              try {
+                final len = e.lengthSync();
+                final nm = e.path.split(RegExp(r'[\\/]')).last;
+                found.add(PlatformFile(path: e.path, name: nm, size: len));
+              } catch (_) {}
+            }
+          } else if (e is Directory) {
+            final name = e.path.split(RegExp(r'[\\/]')).last;
+            if (!name.startsWith('.')) {
+              queue.add(e);
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('Skip dir scan error for ${current.path}: $e');
+      }
+    }
+    return found;
   }
 }
 
