@@ -8,7 +8,7 @@ class LanguageService extends ChangeNotifier {
   factory LanguageService() => _instance;
   LanguageService._internal();
 
-  static const String _prefKey = 'Musixa_app_language_v3';
+  static const String _prefKey = 'musixa_admin_lang_pref_v4';
   AppLanguage _currentLanguage = AppLanguage.english; // Default is strictly English!
 
   AppLanguage get currentLanguage => _currentLanguage;
@@ -16,8 +16,8 @@ class LanguageService extends ChangeNotifier {
   bool get isEnglish => _currentLanguage == AppLanguage.english;
 
   String get languageCode => _currentLanguage == AppLanguage.hindi ? 'hi' : 'en';
-  String get displayLabel => _currentLanguage == AppLanguage.hindi ? '🇮🇳 हिंदी' : '🇬🇧 English';
-  String get switchTargetLabel => _currentLanguage == AppLanguage.hindi ? 'English' : 'हिंदी';
+  String get displayLabel => _currentLanguage == AppLanguage.hindi ? 'Hindi' : 'English';
+  String get switchTargetLabel => _currentLanguage == AppLanguage.hindi ? 'English' : 'Hindi';
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();

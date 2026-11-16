@@ -1,4 +1,4 @@
-﻿import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:async';
 import 'dart:io';
@@ -1507,7 +1507,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                           Flexible(
                             child: Text(
                               'Cloudflare R2 Storage',
-                              style: GoogleFonts.syne(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                              style: GoogleFonts.syne(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.bold),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -1533,47 +1533,52 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                       const SizedBox(height: 2),
                       Text(
                         'Bucket: ${r2.bucketName ?? "musixa-music"} | CDN Live',
-                        style: const TextStyle(color: Colors.white60, fontSize: 10),
+                        style: const TextStyle(color: Colors.white60, fontSize: 9.5),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 6),
-                IconButton(
-                  icon: _isLoadingStorageStats
-                      ? const SizedBox(width: 13, height: 13, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00E5FF)))
-                      : const Icon(Icons.refresh_rounded, size: 16, color: Color(0xFF00E5FF)),
-                  tooltip: _lang.isHindi ? 'स्टोरेज रिफ्रेश करें' : 'Refresh Storage',
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
-                  onPressed: _refreshStorageStats,
-                ),
-                const SizedBox(width: 3),
-                InkWell(
-                  onTap: _showR2SettingsDialog,
-                  borderRadius: BorderRadius.circular(6),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3.5),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
+                const SizedBox(width: 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: _isLoadingStorageStats
+                          ? const SizedBox(width: 13, height: 13, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00E5FF)))
+                          : const Icon(Icons.refresh_rounded, size: 16, color: Color(0xFF00E5FF)),
+                      tooltip: _lang.isHindi ? 'स्टोरेज रिफ्रेश करें' : 'Refresh Storage',
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+                      onPressed: _refreshStorageStats,
+                    ),
+                    const SizedBox(width: 4),
+                    InkWell(
+                      onTap: _showR2SettingsDialog,
                       borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.35)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.settings_rounded, size: 12, color: Color(0xFF00E5FF)),
-                        SizedBox(width: 3),
-                        Text(
-                          'Settings',
-                          style: TextStyle(color: Color(0xFF00E5FF), fontSize: 9.5, fontWeight: FontWeight.bold),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E293B),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.35)),
                         ),
-                      ],
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.settings_rounded, size: 12, color: Color(0xFF00E5FF)),
+                            SizedBox(width: 3),
+                            Text(
+                              'Settings',
+                              style: TextStyle(color: Color(0xFF00E5FF), fontSize: 9.5, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -3648,7 +3653,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     elevation: 0,
                   ),
                   icon: const Icon(Icons.drive_folder_upload_rounded, size: 16),
-                  label: Text(_lang.isHindi ? 'बल्क / फ़ोल्डर अपलोड' : 'Bulk / Folder Upload', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                  label: Text(_lang.isHindi ? 'फ़ोल्डर अपलोड' : 'Upload Folder', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                   onPressed: () => _showBulkUploadDialog(),
                 ),
                 const SizedBox(width: 8),
@@ -3972,7 +3977,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                           children: [
                             const Icon(Icons.drive_folder_upload_rounded, color: Color(0xFF00E5FF), size: 16),
                             const SizedBox(width: 8),
-                            Text(_lang.isHindi ? 'बल्क / फ़ोल्डर अपलोड' : 'Bulk / Folder Upload', style: const TextStyle(color: Colors.white, fontSize: 12)),
+                            Text(_lang.isHindi ? 'फ़ोल्डर अपलोड' : 'Upload Folder', style: const TextStyle(color: Colors.white, fontSize: 12)),
                           ],
                         ),
                       ),
